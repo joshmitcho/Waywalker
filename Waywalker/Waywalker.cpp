@@ -22,7 +22,7 @@ int main()
 	message.setFont(font);
 
 	// Assign the actual message
-	message.setString("Two more time");
+	message.setString("Four more time");
 
 	// Make it really big
 	message.setCharacterSize(100);

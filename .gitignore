@@ -3,6 +3,7 @@ Debug
 ipch
 *.psd
 *.sdf
+*.opensdf
 *.sln
 Waywalker/*.dll
 Waywalker/ReadMe.txt
