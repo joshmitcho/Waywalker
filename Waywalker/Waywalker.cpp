@@ -25,7 +25,7 @@ int main()
 	message.setFont(font);
 
 	// Assign the actual message
-	message.setString("Hi Cam");
+	message.setString("One more time");
 
 	// Make it really big
 	message.setCharacterSize(100);
