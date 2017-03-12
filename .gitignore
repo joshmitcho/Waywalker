@@ -1,0 +1,13 @@
+.vs
+Debug
+ipch
+*.psd
+*.sdf
+*.sln
+Waywalker/*.dll
+Waywalker/ReadMe.txt
+Waywalker/*.vcxproj
+Waywalker/*.vcxproj.filters
+Waywalker/stdafx.*
+Waywalker/targetver.h
+Waywalker/Debug
