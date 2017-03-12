@@ -3,7 +3,9 @@
 
 #include "stdafx.h"
 #include <SFML/Graphics.hpp>
+#include "Txt.h"
 
+using namespace std;
 
 int main()
 {
@@ -14,6 +16,10 @@ int main()
 	// Create a "Text" object called "message". Weird but we will learn about objects soon
 	sf::Text message;
 
+	Txt text;
+
+	text.message = "Hello";
+
 	// We need to choose a font
 	sf::Font font;
 	font.loadFromFile("Resources\\Fonts\\28 Days Later.ttf");
@@ -22,7 +28,7 @@ int main()
 	message.setFont(font);
 
 	// Assign the actual message
-	message.setString("Four more time");
+	message.setString(text.message);
 
 	// Make it really big
 	message.setCharacterSize(100);
