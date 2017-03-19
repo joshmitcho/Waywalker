@@ -1,19 +1,18 @@
 #include <string>
 #pragma once
-using namespace std;
 
 class Character
 {
 public:
-	Character(string name, string race, int lvl);
+	Character(std::string name, std::string race, int lvl);
 	~Character();
-	string getName();
+	std::string getName();
 	int getWalkSpeed();
 	void setStats(int hp, int str, int dex, int con, int intell, int wis, int cha);
 
 private:
-	string name;
-	string race;
+	std::string name;
+	std::string race;
 	int walkSpeed;
 	int level;
 	int exp;

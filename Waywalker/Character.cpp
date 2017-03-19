@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Character.h"
 
+using namespace std;
 
 Character::Character(string name, string race, int lvl)
 {

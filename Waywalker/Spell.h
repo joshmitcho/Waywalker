@@ -1,6 +1,6 @@
 #include <string>
 #pragma once
-using namespace std;
+
 class Spell
 {
 public:
@@ -9,7 +9,7 @@ public:
 
 private:
 	int damage;
-	string school;
+	std::string school;
 	void secondaryEffects();
 };
 
