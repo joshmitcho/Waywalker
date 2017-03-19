@@ -6,6 +6,7 @@ ipch
 *.opensdf
 *.sln
 Waywalker/*.dll
+Waywalker/*.lib
 Waywalker/ReadMe.txt
 Waywalker/*.vcxproj
 Waywalker/*.vcxproj.filters

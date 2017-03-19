@@ -6,6 +6,7 @@ public:
 	~Map();
 
 private:
-	bool terrain[];
+	int terrain[];
+	void generateTerrain();
 };
 

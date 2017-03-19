@@ -10,3 +10,8 @@ Map::Map()
 Map::~Map()
 {
 }
+
+void generateTerrain()
+{
+
+}
