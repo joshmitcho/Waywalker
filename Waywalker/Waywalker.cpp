@@ -3,49 +3,37 @@
 
 #include "stdafx.h"
 #include <SFML/Graphics.hpp>
-#include "Txt.h"
+#include "Character.h"
 
 using namespace std;
 
 int main()
 {
 	// Make a window that is 800 by 200 pixels
-	// And has the title "Hello from SFML"
-	sf::RenderWindow window(sf::VideoMode(800, 200), "Hello from SFML");
+	// And has the title "Waywalker"
+	sf::RenderWindow window(sf::VideoMode(1280, 720), "Waywalker");
 
-	// Create a "Text" object called "message". Weird but we will learn about objects soon
 	sf::Text message;
 
-	Txt text;
+	Character pc = Character("Hans", "Human", 3);
 
-	text.message = "Hello";
-
-	// We need to choose a font
 	sf::Font font;
-	font.loadFromFile("Resources\\Fonts\\28 Days Later.ttf");
+	font.loadFromFile("Resources\\Fonts\\OptimusPrinceps.ttf");
 
-	// Set the font to our message
 	message.setFont(font);
 
-	// Assign the actual message
-	message.setString(text.message);
+	message.setString("Name: " + pc.getName() + "\nMove Speed: " + to_string(pc.getWalkSpeed()));
 
-	// Make it really big
-	message.setCharacterSize(100);
+	message.setCharacterSize(36);
 
-	// Choose a color
 	message.setFillColor(sf::Color::White);
 
-	// This "while" loop goes round and round- perhaps forever
 	while (window.isOpen())
 	{
-		// The next 6 lines of code detect if the window is closed
-		// And then shuts down the program
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				// Someone closed the window- bye
 				window.close();
 		}
 
@@ -60,7 +48,7 @@ int main()
 
 		// Show everything we just drew
 		window.display();
-	}// This is the end of the "while" loop
+	}
 
 	return 0;
 }
