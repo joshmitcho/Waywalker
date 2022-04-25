@@ -8,10 +8,23 @@ public class ClickableTile : MonoBehaviour
     public int tileX;
     public int tileY;
 
+    public TileMap map;
+
+    public bool withinMovementSet = true;
+
+    private void OnMouseOver()
+    {
+        if (withinMovementSet && map.state != TileMap.State.unitMoving)
+        {
+            map.GeneratePathTo(tileX, tileY);
+        }
+    }
+
     private void OnMouseUp()
     {
-        Debug.Log("Click " + tileX + ", " + tileY);
-
-        
+        if (map.state != TileMap.State.unitMoving)
+        {
+            map.MoveUnit();
+        }
     }
 }
