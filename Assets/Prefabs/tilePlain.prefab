@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 5981862478706631395}
   - component: {fileID: 5300333126009273763}
   m_Layer: 0
-  m_Name: tileMountain
+  m_Name: tilePlain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,7 +161,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: de0fd93377158d54081f5fe52e2968e6, type: 3}
-  m_Color: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
+  m_Color: {r: 0.31764707, g: 0.74509805, b: 0.22745098, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

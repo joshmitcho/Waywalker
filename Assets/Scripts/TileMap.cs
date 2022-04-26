@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using System.IO;
 
 public class TileMap : MonoBehaviour
 {
@@ -15,33 +16,37 @@ public class TileMap : MonoBehaviour
     public TextMeshProUGUI turnDisplay;
     public TextMeshProUGUI endTurnDisplay;
 
-    public List<Unit> units;
+    public List<Unit> activeUnits;
     Unit selectedUnit;
 
     List<Unit> turnQueue;
 
+    public UnitType[] unitTypes;
     public TileType[] tileTypes;
 
     int[,] tiles;
+    int[,] units;
     Node[,] graph;
 
-    int mapSizeX = 20;
-    int mapSizeY = 11;
+    ClickableTile[,] clickableTiles;
+
+    int mapSizeX;
+    int mapSizeY;
 
     private void Start()
     {
-        NextRound();
-        NextTurn(true);
-        GenerateMapData();
+        GenerateMapData("map1.txt");
         GeneratePathfindingGraph();
         GenerateMapVisual();
+        NextRound();
+        NextTurn(true);
     }
 
     void NextRound()
     {
         roundCounter++;
         roundDisplay.text = "Round: " + roundCounter;
-        turnQueue = new List<Unit>(units);
+        turnQueue = new List<Unit>(activeUnits);
     }
 
     public void NextTurn(bool first = false)
@@ -55,9 +60,14 @@ public class TileMap : MonoBehaviour
         if (turnQueue.Count == 0)
         {
             NextRound();
+            if (turnQueue.Count == 0)
+            {
+                return;
+            }
         }
 
         selectedUnit = turnQueue[0];
+        selectedUnit.ResetTurnValues();
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
         endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
 
@@ -65,52 +75,146 @@ public class TileMap : MonoBehaviour
         selectedUnit.tileX = (int)selectedUnit.gameObject.transform.position.x;
         selectedUnit.tileY = (int)selectedUnit.gameObject.transform.position.y;
         selectedUnit.map = this;
+        GenerateMovementSet(selectedUnit);
     }
 
-    void GenerateMapData()
+    public void GenerateMovementSet(Unit selectedUnit)
     {
-        //Allocate our map tiles
+        //Dijkstra's Algorithm for shortest path
+        //dist relates each node to it's distance to source
+        Dictionary<Node, float> dist = new Dictionary<Node, float>();
+        //prev holds the steps for the shortest path to source
+        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
+
+        //"Q" in the Wikipedia pseudocode
+        List<Node> unvisited = new List<Node>();
+
+        Node source = graph[
+            selectedUnit.tileX,
+            selectedUnit.tileY];
+
+        dist[source] = 0;
+        prev[source] = null;
+
+        //Initialize every node to be at infinite distance, snice we haven't started yet.
+        //Also, it's possible some nodes will be unreachable from this source
+        foreach (Node n in graph)
+        {
+            unvisited.Add(n);
+
+            if (n != source)
+            {
+                dist[n] = Mathf.Infinity;
+                prev[n] = null;
+            }
+        }
+
+        while (unvisited.Count > 0)
+        {
+            //u is the unvisited node with the shortest distance to source
+            Node u = null;
+            foreach (Node possibleU in unvisited)
+            {
+                if (u == null || dist[possibleU] < dist[u])
+                {
+                    u = possibleU;
+                }
+            }
+
+            //u is being visited right now
+            unvisited.Remove(u);
+
+            foreach (Node v in u.edges) // for all of u's neighbours...
+            {
+                if (UnitCanEnterTile(v))
+                {
+                    float cost = dist[u] + CostToEnterTile(v.x, v.y, u.x, u.y);
+                    if (cost < dist[v])
+                    {
+                        dist[v] = cost;
+                        prev[v] = u;
+                    }
+                }
+            }
+        }
+
+        foreach (Node n in dist.Keys)
+        {
+            if (dist[n] <= selectedUnit.remainingMovement + .5 && dist[n] != 0)
+            {
+                clickableTiles[n.x, n.y].AddToMovementSet();
+                clickableTiles[n.x, n.y].costToFinishHere = (int)dist[n];
+            } else {
+                clickableTiles[n.x, n.y].RemoveFromAllSets();
+                clickableTiles[n.x, n.y].costToFinishHere = 0;
+            }
+        }
+
+    }
+
+    void GenerateMapData(string filename)
+    {
+        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
+
+        //read and interpret the 3 lines of info before the map begins
+        //code code code
+
+        string[] map = mapText[3..mapText.Length];
+
+        mapSizeX = map[0].Length;
+        mapSizeY = map.Length;
+
+        //Allocate our map tiles and unit spots
         tiles = new int[mapSizeX, mapSizeY];
+        units = new int[mapSizeX, mapSizeY];
+        clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
 
         int x, y;
 
-        //Initialize map tiles to be grass (0 = grass)
+        //Load map info into tiles[]
         for (x = 0; x < mapSizeX; x++)
         {
             for (y = 0; y < mapSizeY; y++)
             {
-                tiles[x, y] = 0;
+                if (map[mapSizeY - y - 1][x] == 'M') //mountain (impassable on foot)
+                {
+                    tiles[x, y] = 2;
+                }
+                else if (map[mapSizeY - y - 1][x] == 'W') //water
+                {
+                    tiles[x, y] = 3;
+                }
+                else if (map[mapSizeY - y - 1][x] == 'X') //unit
+                {
+                    //start unit here
+                    units[x, y] = 1;
+                }
+                else if (map[mapSizeY - y - 1][x] == 'V') //unit
+                {
+                    //start unit here
+                    units[x, y] = 2;
+                }
+                else //plain terrain for theme
+                {
+                    tiles[x, y] = 0;
+                }
             }
         }
-
-        //swamp area _1 = swamp)
-        for (x = 3; x <= 5; x++)
-        {
-            for (y = 0; y < 4; y++)
-            {
-                tiles[x, y] = 1;
-            }
-        }
-
-        //u-shaped mountain range (2 = mountain)
-        tiles[4, 4] = 2;
-        tiles[5, 4] = 2;
-        tiles[6, 4] = 2;
-        tiles[7, 4] = 2;
-        tiles[8, 4] = 2;
-
-        tiles[4, 5] = 2;
-        tiles[4, 6] = 2;
-        tiles[8, 5] = 2;
-        tiles[8, 6] = 2;
     }
 
     float CostToEnterTile(int sourceX, int sourceY, int targetX, int targetY)
     {
-        TileType tt = tileTypes[tiles[sourceX, sourceY]];
+        float cost;
 
-        float cost = tt.movementCost;
-        
+        if (selectedUnit.movementType == Unit.MovementType.flying)
+        {
+            cost = 5;
+        } else
+        {
+            TileType tt = tileTypes[tiles[sourceX, sourceY]];
+            cost = tt.movementCost;
+        }
+
         if (sourceX != targetX && sourceY != targetY)
         {
             cost += 0.001f;
@@ -147,6 +251,7 @@ public class TileMap : MonoBehaviour
                     graph[x, y].edges.Add(graph[x, y - 1]);
                 if (y < mapSizeY - 1)
                     graph[x, y].edges.Add(graph[x, y + 1]);
+                /*
                 //add diagonal neighbours
                 if (x > 0 && y > 0)
                     graph[x, y].edges.Add(graph[x - 1, y - 1]);
@@ -156,6 +261,7 @@ public class TileMap : MonoBehaviour
                     graph[x, y].edges.Add(graph[x + 1, y - 1]);
                 if (x < mapSizeX - 1 && y < mapSizeY - 1)
                     graph[x, y].edges.Add(graph[x + 1, y + 1]);
+                */
             }
         }
     }
@@ -166,14 +272,29 @@ public class TileMap : MonoBehaviour
         {
             for (int y = 0; y < mapSizeY; y++)
             {
-                //spawn visual prefabs
+                //spawn visual prefabs for tiles
                 TileType tt = tileTypes[tiles[x, y]];
-                GameObject go = Instantiate(tt.tileVisualPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                GameObject tileGO = Instantiate(tt.tileVisualPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
-                ClickableTile ct = go.GetComponent<ClickableTile>();
+                ClickableTile ct = tileGO.GetComponent<ClickableTile>();
                 ct.tileX = x;
                 ct.tileY = y;
                 ct.map = this;
+                clickableTiles[x, y] = ct;
+
+                //spawn visual prefabs for units
+                if (units[x, y] != 0)
+                {
+                    UnitType ut = unitTypes[units[x, y]];
+                    GameObject unitGO = Instantiate(ut.unitVisualPrefab, new Vector3(x, y, 0), Quaternion.identity);
+
+                    Unit un = unitGO.GetComponent<Unit>();
+                    un.tileX = x;
+                    un.tileY = y;
+                    un.map = this;
+                    activeUnits.Add(un);
+                    clickableTiles[x, y].occupyingUnit = un;
+                }
             }
         }
     }
@@ -249,7 +370,7 @@ public class TileMap : MonoBehaviour
             {
                 if (UnitCanEnterTile(v))
                 {
-                    float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
+                    float cost = dist[u] + CostToEnterTile(v.x, v.y, u.x, u.y);
                     if (cost < dist[v])
                     {
                         dist[v] = cost;
@@ -284,12 +405,19 @@ public class TileMap : MonoBehaviour
         selectedUnit.currentPath = currentPath;
     }
 
-    public void MoveUnit()
+    public void ClearCurrentPath()
+    {
+        selectedUnit.currentPath = null;
+    }
+
+    public void MoveUnit(int x, int y, int cost)
     {
         if (selectedUnit.currentPath != null)
         {
             state = State.unitMoving;
-            selectedUnit.MoveNextTile();
+            clickableTiles[selectedUnit.tileX, selectedUnit.tileY].occupyingUnit = null;
+            clickableTiles[x, y].occupyingUnit = selectedUnit;
+            selectedUnit.MoveNextTile(cost);
         }
         
     }

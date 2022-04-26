@@ -6,10 +6,15 @@ public class Unit : MonoBehaviour
 {
     public enum State { zero, moving };
 
-    public enum MovementType { walking, flying };
+    public enum MovementType { walking, flying, swimming };
 
     public string unitName;
+
     public MovementType movementType = MovementType.walking;
+    public int movementSpeed = 30;
+    public int remainingMovement;
+
+    public int attackRange = 5;
 
     public int tileX;
     public int tileY;
@@ -18,6 +23,16 @@ public class Unit : MonoBehaviour
 
     public List<Node> currentPath = null;
     public State state = State.zero;
+
+    private void Awake()
+    {
+        ResetTurnValues();
+    }
+
+    public void ResetTurnValues()
+    {
+        remainingMovement = movementSpeed;
+    }
 
     private void OnMouseUp()
     {
@@ -45,7 +60,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void MoveNextTile()
+    public void MoveNextTile(int cost)
     {
         if (currentPath == null) return;
 
@@ -56,9 +71,7 @@ public class Unit : MonoBehaviour
         currentPath.RemoveAt(0);
 
         //now we move to the new first node in currentPath (visually)
-        //transform.position = map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y);
-
-        StartCoroutine(MoveToPosition(transform, map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y), 0.1f));
+        StartCoroutine(MoveToPosition(transform, map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y), 0.1f, cost));
 
         //update unit's X and Y in the data
         tileX = currentPath[0].x;
@@ -67,12 +80,13 @@ public class Unit : MonoBehaviour
         if (currentPath.Count == 1)
         {
             //then we're standing on our final destination: we're done
+            remainingMovement -= cost;
             currentPath = null;
             state = State.zero;
         }
     }
 
-    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove)
+    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove, int cost)
     {
         var currentPos = transform.position;
         var t = 0f;
@@ -86,10 +100,11 @@ public class Unit : MonoBehaviour
         if (currentPath == null) //if movement is complete...
         {
             map.state = TileMap.State.zero;
+            map.GenerateMovementSet(this);
         }
         else //if there's still movement left to do...
         {
-            MoveNextTile();
+            MoveNextTile(cost);
         }
     }
 

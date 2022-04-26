@@ -8,23 +8,58 @@ public class ClickableTile : MonoBehaviour
     public int tileX;
     public int tileY;
 
+    public int costToFinishHere;
+
     public TileMap map;
 
-    public bool withinMovementSet = true;
+    bool withinMovementSet;
 
-    private void OnMouseOver()
+    public Unit occupyingUnit;
+
+    private void Awake()
     {
-        if (withinMovementSet && map.state != TileMap.State.unitMoving)
+        occupyingUnit = null;
+        withinMovementSet = false;
+    }
+
+    private void OnMouseEnter()
+    {
+        if (map.state != TileMap.State.unitMoving)
         {
             map.GeneratePathTo(tileX, tileY);
         }
     }
 
+    private void OnMouseExit()
+    {
+        map.ClearCurrentPath();
+    }
+
+    public void AddToMovementSet()
+    {
+        Color highlightColour = gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color;
+        highlightColour.a = 0.3f;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = highlightColour;
+        withinMovementSet = true;
+    }
+
+    public void RemoveFromAllSets()
+    {
+        Color highlightColour = gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color;
+        highlightColour.a = 0f;
+        gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = highlightColour;
+        withinMovementSet = false;
+    }
+
     private void OnMouseUp()
     {
-        if (map.state != TileMap.State.unitMoving)
+        if (!withinMovementSet)
         {
-            map.MoveUnit();
+            Debug.Log("can't move here");
+        }
+        else if (map.state != TileMap.State.unitMoving)
+        {
+            map.MoveUnit(tileX, tileY, costToFinishHere);
         }
     }
 }
