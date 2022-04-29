@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3609059808462719477}
   - component: {fileID: 3609059808462719474}
   m_Layer: 0
-  m_Name: Red Unit
+  m_Name: X Red Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,6 +48,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Red
   movementType: 0
+  movementSpeed: 30
+  remainingMovement: 0
+  diagonalCount: 0
+  attackRange: 5
+  initiative: 10
   tileX: 0
   tileY: 0
   map: {fileID: 0}

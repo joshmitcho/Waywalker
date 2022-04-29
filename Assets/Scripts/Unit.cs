@@ -13,8 +13,11 @@ public class Unit : MonoBehaviour
     public MovementType movementType = MovementType.walking;
     public int movementSpeed = 30;
     public int remainingMovement;
+    public int diagonalCount = 0;
 
     public int attackRange = 5;
+
+    public int initiative = 20;
 
     public int tileX;
     public int tileY;
@@ -32,6 +35,7 @@ public class Unit : MonoBehaviour
     public void ResetTurnValues()
     {
         remainingMovement = movementSpeed;
+        diagonalCount = 0;
     }
 
     private void OnMouseUp()

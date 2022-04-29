@@ -14,6 +14,8 @@ public class ClickableTile : MonoBehaviour
 
     bool withinMovementSet;
 
+    public bool isWalkable = true;
+    public int movementCost = 5;
     public Unit occupyingUnit;
 
     private void Awake()

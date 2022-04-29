@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 6457672092536749719}
   - component: {fileID: 6457672092536749713}
   m_Layer: 0
-  m_Name: Blue Unit
+  m_Name: V Blue Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,6 +132,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitName: Blue
   movementType: 1
+  movementSpeed: 30
+  remainingMovement: 0
+  diagonalCount: 0
+  attackRange: 5
+  initiative: 15
   tileX: 0
   tileY: 0
   map: {fileID: 0}

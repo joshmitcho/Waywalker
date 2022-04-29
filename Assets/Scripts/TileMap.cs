@@ -21,10 +21,7 @@ public class TileMap : MonoBehaviour
 
     List<Unit> turnQueue;
 
-    public UnitType[] unitTypes;
-    public TileType[] tileTypes;
-
-    int[,] tiles;
+    //int[,] tiles;
     int[,] units;
     Node[,] graph;
 
@@ -35,11 +32,16 @@ public class TileMap : MonoBehaviour
 
     private void Start()
     {
-        GenerateMapData("map1.txt");
+        GenerateMapTiles("map1.txt");
         GeneratePathfindingGraph();
-        GenerateMapVisual();
+        RollInitiative();
         NextRound();
-        NextTurn(true);
+        NextTurn();
+    }
+
+    void RollInitiative()
+    {
+        activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));
     }
 
     void NextRound()
@@ -49,14 +51,8 @@ public class TileMap : MonoBehaviour
         turnQueue = new List<Unit>(activeUnits);
     }
 
-    public void NextTurn(bool first = false)
+    public void NextTurn()
     {
-        if (!first)
-        {
-            //remove the first unit from the queue
-            turnQueue.RemoveAt(0);
-        }
-
         if (turnQueue.Count == 0)
         {
             NextRound();
@@ -71,11 +67,9 @@ public class TileMap : MonoBehaviour
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
         endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
 
-        //Set up selected unit's initial x and y, as well as tell it what map it's on
-        selectedUnit.tileX = (int)selectedUnit.gameObject.transform.position.x;
-        selectedUnit.tileY = (int)selectedUnit.gameObject.transform.position.y;
-        selectedUnit.map = this;
         GenerateMovementSet(selectedUnit);
+        turnQueue.RemoveAt(0);
+
     }
 
     public void GenerateMovementSet(Unit selectedUnit)
@@ -128,7 +122,7 @@ public class TileMap : MonoBehaviour
             {
                 if (UnitCanEnterTile(v))
                 {
-                    float cost = dist[u] + CostToEnterTile(v.x, v.y, u.x, u.y);
+                    float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
                     if (cost < dist[v])
                     {
                         dist[v] = cost;
@@ -152,56 +146,6 @@ public class TileMap : MonoBehaviour
 
     }
 
-    void GenerateMapData(string filename)
-    {
-        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
-
-        //read and interpret the 3 lines of info before the map begins
-        //code code code
-
-        string[] map = mapText[3..mapText.Length];
-
-        mapSizeX = map[0].Length;
-        mapSizeY = map.Length;
-
-        //Allocate our map tiles and unit spots
-        tiles = new int[mapSizeX, mapSizeY];
-        units = new int[mapSizeX, mapSizeY];
-        clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
-
-        int x, y;
-
-        //Load map info into tiles[]
-        for (x = 0; x < mapSizeX; x++)
-        {
-            for (y = 0; y < mapSizeY; y++)
-            {
-                if (map[mapSizeY - y - 1][x] == 'M') //mountain (impassable on foot)
-                {
-                    tiles[x, y] = 2;
-                }
-                else if (map[mapSizeY - y - 1][x] == 'W') //water
-                {
-                    tiles[x, y] = 3;
-                }
-                else if (map[mapSizeY - y - 1][x] == 'X') //unit
-                {
-                    //start unit here
-                    units[x, y] = 1;
-                }
-                else if (map[mapSizeY - y - 1][x] == 'V') //unit
-                {
-                    //start unit here
-                    units[x, y] = 2;
-                }
-                else //plain terrain for theme
-                {
-                    tiles[x, y] = 0;
-                }
-            }
-        }
-    }
-
     float CostToEnterTile(int sourceX, int sourceY, int targetX, int targetY)
     {
         float cost;
@@ -211,11 +155,10 @@ public class TileMap : MonoBehaviour
             cost = 5;
         } else
         {
-            TileType tt = tileTypes[tiles[sourceX, sourceY]];
-            cost = tt.movementCost;
+            cost = clickableTiles[targetX, targetY].movementCost;
         }
 
-        if (sourceX != targetX && sourceY != targetY)
+        if (sourceX != targetX && sourceY != targetY) //diagonal movement
         {
             cost += 0.001f;
         }
@@ -266,34 +209,85 @@ public class TileMap : MonoBehaviour
         }
     }
 
-    void GenerateMapVisual()
+    GameObject LoadPrefabFromFile(char firstLetter)
     {
-        for (int x = 0; x < mapSizeX; x++)
+        foreach (string filename in Directory.GetFiles("Assets/Resources"))
         {
-            for (int y = 0; y < mapSizeY; y++)
+            string fn = filename[17..(filename.Length-7)];
+            if (fn[0] == firstLetter)
+            {
+                GameObject loadedObject = Resources.Load(fn) as GameObject;
+                if (loadedObject == null)
+                {
+                    throw new FileNotFoundException("...no file found at " + fn);
+                }
+                return loadedObject;
+            }
+            
+        }
+                
+        return null;
+    }
+
+
+    void GenerateMapTiles(string filename)
+    {
+        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
+
+        //read and interpret the 3 lines of info before the map begins
+        //code code code
+
+        string[] map = mapText[3..mapText.Length];
+
+        mapSizeX = map[0].Length;
+        mapSizeY = map.Length;
+
+        //Allocate our map tiles and unit spots
+        units = new int[mapSizeX, mapSizeY];
+        clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
+
+        int x, y;
+
+        for (x = 0; x < mapSizeX; x++)
+        {
+            for (y = 0; y < mapSizeY; y++)
             {
                 //spawn visual prefabs for tiles
-                TileType tt = tileTypes[tiles[x, y]];
-                GameObject tileGO = Instantiate(tt.tileVisualPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                
+                //grab tile letter from map txt file
+                char letter = map[mapSizeY - y - 1][x];
+                GameObject tileGO;
+                ClickableTile ct;
 
-                ClickableTile ct = tileGO.GetComponent<ClickableTile>();
-                ct.tileX = x;
-                ct.tileY = y;
-                ct.map = this;
-                clickableTiles[x, y] = ct;
-
-                //spawn visual prefabs for units
-                if (units[x, y] != 0)
+                if (letter == 'X' || letter == 'V') //if it's a unit...
                 {
-                    UnitType ut = unitTypes[units[x, y]];
-                    GameObject unitGO = Instantiate(ut.unitVisualPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                    //...instntiate a plain tile under it first
+                    tileGO = Instantiate(LoadPrefabFromFile('-'), new Vector3(x, y, 0), Quaternion.identity);
+                    ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileX = x;
+                    ct.tileY = y;
+                    ct.map = this;
+                    clickableTiles[x, y] = ct;
 
+                    
+                    GameObject unitGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
                     Unit un = unitGO.GetComponent<Unit>();
                     un.tileX = x;
                     un.tileY = y;
                     un.map = this;
                     activeUnits.Add(un);
                     clickableTiles[x, y].occupyingUnit = un;
+                    
+                }
+                else
+                {
+                    tileGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
+
+                    ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileX = x;
+                    ct.tileY = y;
+                    ct.map = this;
+                    clickableTiles[x, y] = ct;
                 }
             }
         }
@@ -307,7 +301,7 @@ public class TileMap : MonoBehaviour
 
     bool UnitCanEnterTile(Node n)
     {
-        return selectedUnit.movementType == Unit.MovementType.walking && tileTypes[tiles[n.x, n.y]].isWalkable
+        return selectedUnit.movementType == Unit.MovementType.walking && clickableTiles[n.x, n.y].isWalkable
                     || selectedUnit.movementType == Unit.MovementType.flying;
     }
 
@@ -370,7 +364,7 @@ public class TileMap : MonoBehaviour
             {
                 if (UnitCanEnterTile(v))
                 {
-                    float cost = dist[u] + CostToEnterTile(v.x, v.y, u.x, u.y);
+                    float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
                     if (cost < dist[v])
                     {
                         dist[v] = cost;
@@ -380,6 +374,8 @@ public class TileMap : MonoBehaviour
 
             }
         }
+
+        Debug.Log("cost: " + dist[target] + "\nremaining movement: " + selectedUnit.remainingMovement);
 
         //if we get here, then either we found the shortest path to target, or there is no route to target
 

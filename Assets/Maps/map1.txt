@@ -2,13 +2,13 @@
 //second line for ____ information
 //third line for _____ information
 MMMMMMMMMMMMMMMMMMMM
-M WWWWWWWW         M
-M   WWWWWW         M
-M X  WWWWW         M
-M      WWWW        M
-M V                M
-M          WWWW    M
-M            WWWW  M
-M              WWWWM
-M                  M
+M-iddddddf---------M
+M-XfWWWWWb---------M
+M---aWWWWb---------M
+M---aWWWWWW--------M
+M-V-ecccccWWddf----M
+M----------Wccg----M
+M------------------M
+M--------------hddfM
+M--------------eccgM
 MMMMMMMMMMMMMMMMMMMM
