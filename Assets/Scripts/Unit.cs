@@ -24,13 +24,15 @@ public class Unit : MonoBehaviour
 
     public TileMap map;
 
-    public List<Node> currentPath = null;
+    List<Node> currentPath = null;
     public State state = State.zero;
 
     private void Awake()
     {
         ResetTurnValues();
     }
+
+    
 
     public void ResetTurnValues()
     {
@@ -44,26 +46,15 @@ public class Unit : MonoBehaviour
 
 
     }
-
-    private void Update()
+    public List<Node> GetCurrentPath()
     {
-        if (currentPath != null)
-        {
-            int i = 0;
-
-            //Debug.Log("currentPath count: " + currentPath.Count);
-
-            while (i < currentPath.Count - 1)
-            {
-                Vector3 start = map.TileCoordToWorldCoord(currentPath[i].x, currentPath[i].y);
-                Vector3 end = map.TileCoordToWorldCoord(currentPath[i + 1].x, currentPath[i + 1].y);
-                i++;
-
-                Debug.DrawLine(start, end);
-            }
-        }
+        return currentPath;
     }
-
+    public void SetCurrentPath(List<Node> path)
+    {
+        currentPath = path;
+    }
+    
     public void MoveNextTile(int cost)
     {
         if (currentPath == null) return;

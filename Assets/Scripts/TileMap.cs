@@ -21,11 +21,12 @@ public class TileMap : MonoBehaviour
 
     List<Unit> turnQueue;
 
-    //int[,] tiles;
     int[,] units;
     Node[,] graph;
 
     ClickableTile[,] clickableTiles;
+
+    public GameObject arrowHolder;
 
     int mapSizeX;
     int mapSizeY;
@@ -39,37 +40,70 @@ public class TileMap : MonoBehaviour
         NextTurn();
     }
 
-    void RollInitiative()
+    void GenerateMapTiles(string filename)
     {
-        activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));
-    }
+        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
 
-    void NextRound()
-    {
-        roundCounter++;
-        roundDisplay.text = "Round: " + roundCounter;
-        turnQueue = new List<Unit>(activeUnits);
-    }
+        //read and interpret the 3 lines of info before the map begins
+        //code code code
 
-    public void NextTurn()
-    {
-        if (turnQueue.Count == 0)
+        string[] map = mapText[3..mapText.Length];
+
+        mapSizeX = map[0].Length;
+        mapSizeY = map.Length;
+
+        //generates arrow segments for later
+        arrowHolder.GetComponent<Arrow>().GenerateArrowSegments(mapSizeX, mapSizeY);
+
+        //Allocate our map tiles and unit spots
+        units = new int[mapSizeX, mapSizeY];
+        clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
+
+        int x, y;
+
+        for (x = 0; x < mapSizeX; x++)
         {
-            NextRound();
-            if (turnQueue.Count == 0)
+            for (y = 0; y < mapSizeY; y++)
             {
-                return;
+                //spawn visual prefabs for tiles
+
+                //grab tile letter from map txt file
+                char letter = map[mapSizeY - y - 1][x];
+                GameObject tileGO;
+                ClickableTile ct;
+
+                if (letter == 'X' || letter == 'V') //if it's a unit...
+                {
+                    //...instntiate a plain tile under it first
+                    tileGO = Instantiate(LoadPrefabFromFile('-'), new Vector3(x, y, 0), Quaternion.identity);
+                    ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileX = x;
+                    ct.tileY = y;
+                    ct.map = this;
+                    clickableTiles[x, y] = ct;
+
+
+                    GameObject unitGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
+                    Unit un = unitGO.GetComponent<Unit>();
+                    un.tileX = x;
+                    un.tileY = y;
+                    un.map = this;
+                    activeUnits.Add(un);
+                    clickableTiles[x, y].occupyingUnit = un;
+
+                }
+                else
+                {
+                    tileGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
+
+                    ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileX = x;
+                    ct.tileY = y;
+                    ct.map = this;
+                    clickableTiles[x, y] = ct;
+                }
             }
         }
-
-        selectedUnit = turnQueue[0];
-        selectedUnit.ResetTurnValues();
-        turnDisplay.text = selectedUnit.unitName + "'s Turn!";
-        endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
-
-        GenerateMovementSet(selectedUnit);
-        turnQueue.RemoveAt(0);
-
     }
 
     public void GenerateMovementSet(Unit selectedUnit)
@@ -138,11 +172,46 @@ public class TileMap : MonoBehaviour
             {
                 clickableTiles[n.x, n.y].AddToMovementSet();
                 clickableTiles[n.x, n.y].costToFinishHere = (int)dist[n];
-            } else {
+            }
+            else
+            {
                 clickableTiles[n.x, n.y].RemoveFromAllSets();
                 clickableTiles[n.x, n.y].costToFinishHere = 0;
             }
         }
+
+    }
+
+    void RollInitiative()
+    {
+        activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));
+    }
+
+    void NextRound()
+    {
+        roundCounter++;
+        roundDisplay.text = "Round: " + roundCounter;
+        turnQueue = new List<Unit>(activeUnits);
+    }
+
+    public void NextTurn()
+    {
+        if (turnQueue.Count == 0)
+        {
+            NextRound();
+            if (turnQueue.Count == 0)
+            {
+                return;
+            }
+        }
+
+        selectedUnit = turnQueue[0];
+        selectedUnit.ResetTurnValues();
+        turnDisplay.text = selectedUnit.unitName + "'s Turn!";
+        endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
+
+        GenerateMovementSet(selectedUnit);
+        turnQueue.RemoveAt(0);
 
     }
 
@@ -227,71 +296,7 @@ public class TileMap : MonoBehaviour
         }
                 
         return null;
-    }
-
-
-    void GenerateMapTiles(string filename)
-    {
-        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
-
-        //read and interpret the 3 lines of info before the map begins
-        //code code code
-
-        string[] map = mapText[3..mapText.Length];
-
-        mapSizeX = map[0].Length;
-        mapSizeY = map.Length;
-
-        //Allocate our map tiles and unit spots
-        units = new int[mapSizeX, mapSizeY];
-        clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
-
-        int x, y;
-
-        for (x = 0; x < mapSizeX; x++)
-        {
-            for (y = 0; y < mapSizeY; y++)
-            {
-                //spawn visual prefabs for tiles
-                
-                //grab tile letter from map txt file
-                char letter = map[mapSizeY - y - 1][x];
-                GameObject tileGO;
-                ClickableTile ct;
-
-                if (letter == 'X' || letter == 'V') //if it's a unit...
-                {
-                    //...instntiate a plain tile under it first
-                    tileGO = Instantiate(LoadPrefabFromFile('-'), new Vector3(x, y, 0), Quaternion.identity);
-                    ct = tileGO.GetComponent<ClickableTile>();
-                    ct.tileX = x;
-                    ct.tileY = y;
-                    ct.map = this;
-                    clickableTiles[x, y] = ct;
-
-                    
-                    GameObject unitGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
-                    Unit un = unitGO.GetComponent<Unit>();
-                    un.tileX = x;
-                    un.tileY = y;
-                    un.map = this;
-                    activeUnits.Add(un);
-                    clickableTiles[x, y].occupyingUnit = un;
-                    
-                }
-                else
-                {
-                    tileGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
-
-                    ct = tileGO.GetComponent<ClickableTile>();
-                    ct.tileX = x;
-                    ct.tileY = y;
-                    ct.map = this;
-                    clickableTiles[x, y] = ct;
-                }
-            }
-        }
-    }
+    }   
 
     public Vector3 TileCoordToWorldCoord(int x, int y)
     {
@@ -308,7 +313,7 @@ public class TileMap : MonoBehaviour
     public void GeneratePathTo(int x, int y)
     {
         //Clear out any old paths the unit may have
-        selectedUnit.currentPath = null;
+        ClearCurrentPath();
 
         //Dijkstra's Algorithm for shortest path
         //dist relates each node to it's distance to source
@@ -375,7 +380,7 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        Debug.Log("cost: " + dist[target] + "\nremaining movement: " + selectedUnit.remainingMovement);
+        //Debug.Log("cost: " + dist[target] + "\nremaining movement: " + selectedUnit.remainingMovement);
 
         //if we get here, then either we found the shortest path to target, or there is no route to target
 
@@ -398,17 +403,19 @@ public class TileMap : MonoBehaviour
         }
 
         //This means currentPath now contains a route from source to target
-        selectedUnit.currentPath = currentPath;
+        selectedUnit.SetCurrentPath(currentPath);
+        arrowHolder.GetComponent<Arrow>().DrawArrow(currentPath);
     }
 
     public void ClearCurrentPath()
     {
-        selectedUnit.currentPath = null;
+        selectedUnit.SetCurrentPath(null);
+        arrowHolder.GetComponent<Arrow>().DrawArrow(null);
     }
 
     public void MoveUnit(int x, int y, int cost)
     {
-        if (selectedUnit.currentPath != null)
+        if (selectedUnit.GetCurrentPath() != null)
         {
             state = State.unitMoving;
             clickableTiles[selectedUnit.tileX, selectedUnit.tileY].occupyingUnit = null;

@@ -18,6 +18,8 @@ public class ClickableTile : MonoBehaviour
     public int movementCost = 5;
     public Unit occupyingUnit;
 
+    Color highlightColour = new Color(58, 162, 190, 134);
+
     private void Awake()
     {
         occupyingUnit = null;
@@ -39,7 +41,6 @@ public class ClickableTile : MonoBehaviour
 
     public void AddToMovementSet()
     {
-        Color highlightColour = gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color;
         highlightColour.a = 0.3f;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = highlightColour;
         withinMovementSet = true;
@@ -47,7 +48,6 @@ public class ClickableTile : MonoBehaviour
 
     public void RemoveFromAllSets()
     {
-        Color highlightColour = gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color;
         highlightColour.a = 0f;
         gameObject.GetComponentsInChildren<SpriteRenderer>()[1].color = highlightColour;
         withinMovementSet = false;

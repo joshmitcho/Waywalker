@@ -52,10 +52,11 @@ MonoBehaviour:
   remainingMovement: 0
   diagonalCount: 0
   attackRange: 5
-  initiative: 10
+  initiative: 20
   tileX: 0
   tileY: 0
   map: {fileID: 0}
+  arrow: {fileID: 0}
   state: 0
 --- !u!58 &3609059808462719474
 CircleCollider2D:
