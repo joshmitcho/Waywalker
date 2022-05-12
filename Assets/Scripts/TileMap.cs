@@ -1,15 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using System;
 using TMPro;
 using System.IO;
 
 public class TileMap : MonoBehaviour
 {
 
-    public enum State { zero, unitMoving };
+    public Camera cam;
 
+    public enum State { zero, unitMoving };
     public State state = State.zero;
+
+    public Tooltip tooltip;
 
     int roundCounter = 0;
     public TextMeshProUGUI roundDisplay;
@@ -23,6 +26,8 @@ public class TileMap : MonoBehaviour
 
     int[,] units;
     Node[,] graph;
+    Dictionary<Node, float> dist;
+    Dictionary<Node, Node> prev;
 
     ClickableTile[,] clickableTiles;
 
@@ -51,6 +56,9 @@ public class TileMap : MonoBehaviour
 
         mapSizeX = map[0].Length;
         mapSizeY = map.Length;
+
+        //center camera over map
+        cam.transform.position = new Vector3(mapSizeX/2f - .5f, mapSizeY/2f - .5f, -10f);
 
         //generates arrow segments for later
         arrowHolder.GetComponent<Arrow>().GenerateArrowSegments(mapSizeX, mapSizeY);
@@ -106,13 +114,13 @@ public class TileMap : MonoBehaviour
         }
     }
 
-    public void GenerateMovementSet(Unit selectedUnit)
+    public void Dijkstra(Unit selectedUnit)
     {
         //Dijkstra's Algorithm for shortest path
         //dist relates each node to it's distance to source
-        Dictionary<Node, float> dist = new Dictionary<Node, float>();
+        dist = new Dictionary<Node, float>();
         //prev holds the steps for the shortest path to source
-        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
+        prev = new Dictionary<Node, Node>();
 
         //"Q" in the Wikipedia pseudocode
         List<Node> unvisited = new List<Node>();
@@ -166,6 +174,16 @@ public class TileMap : MonoBehaviour
             }
         }
 
+    }
+
+    public void GenerateMovementSet()
+    {
+        //Dijkstra's Algorithm for shortest path
+        //dist relates each node to it's distance to source
+        //Dictionary<Node, float> dist = dijkstra.Item1;
+        //prev holds the steps for the shortest path to source
+        //Dictionary<Node, Node> prev = dijkstra.Item2;
+
         foreach (Node n in dist.Keys)
         {
             if (dist[n] <= selectedUnit.remainingMovement + .5 && dist[n] != 0)
@@ -210,9 +228,10 @@ public class TileMap : MonoBehaviour
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
         endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
 
-        GenerateMovementSet(selectedUnit);
+        Dijkstra(selectedUnit);
+        GenerateMovementSet();
+        
         turnQueue.RemoveAt(0);
-
     }
 
     float CostToEnterTile(int sourceX, int sourceY, int targetX, int targetY)
@@ -310,89 +329,13 @@ public class TileMap : MonoBehaviour
                     || selectedUnit.movementType == Unit.MovementType.flying;
     }
 
-    public void GeneratePathTo(int x, int y)
+    public void GeneratePathTo(int targetX, int targetY, bool withinMovementSet)
     {
         //Clear out any old paths the unit may have
         ClearCurrentPath();
-
-        //Dijkstra's Algorithm for shortest path
-        //dist relates each node to it's distance to source
-        Dictionary<Node, float> dist = new Dictionary<Node, float>();
-        //prev holds the steps for the shortest path to source
-        Dictionary<Node, Node> prev = new Dictionary<Node, Node>();
-
-        //"Q" in the Wikipedia pseudocode
-        List<Node> unvisited = new List<Node>();
-
-        Node source = graph[
-            selectedUnit.tileX,
-            selectedUnit.tileY];
-        Node target = graph[x, y];
-
-        dist[source] = 0;
-        prev[source] = null;
-
-        //Initialize every node to be at infinite distance, snice we haven't started yet.
-        //Also, it's possible some nodes will be unreachable from this source
-        foreach (Node n in graph)
-        {
-            unvisited.Add(n);
-
-            if (n != source){
-                dist[n] = Mathf.Infinity;
-                prev[n] = null;
-            }
-        }
-
-        while (unvisited.Count > 0)
-        {
-            //u is the unvisited node with the shortest distance to source
-            Node u = null;
-            foreach(Node possibleU in unvisited)
-            {
-                if (u == null || dist[possibleU] < dist[u])
-                {
-                    u = possibleU;
-                }
-            }
-
-            //if we found the target node, exit while loop
-            if (u == target)
-            {
-                break;
-            }
-
-            //u is being visited right now
-            unvisited.Remove(u);
-
-            foreach (Node v in u.edges) // for all of u's neighbours...
-            {
-                if (UnitCanEnterTile(v))
-                {
-                    float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
-                    if (cost < dist[v])
-                    {
-                        dist[v] = cost;
-                        prev[v] = u;
-                    }
-                }
-
-            }
-        }
-
-        //Debug.Log("cost: " + dist[target] + "\nremaining movement: " + selectedUnit.remainingMovement);
-
-        //if we get here, then either we found the shortest path to target, or there is no route to target
-
-        //if there isn't a previous node for our target...
-        if (prev[target] == null)
-        {
-            //then no path exists
-            return;
-        }
-
+                
         List<Node> currentPath = new List<Node>();
-        Node curr = target;
+        Node curr = graph[targetX, targetY];
 
         //Step through prev and add each node in it to our path
         //prev was ordered target to source, so we Prepend to flip it
@@ -404,7 +347,11 @@ public class TileMap : MonoBehaviour
 
         //This means currentPath now contains a route from source to target
         selectedUnit.SetCurrentPath(currentPath);
-        arrowHolder.GetComponent<Arrow>().DrawArrow(currentPath);
+
+        if (withinMovementSet)
+        {
+            arrowHolder.GetComponent<Arrow>().DrawArrow(currentPath);
+        }
     }
 
     public void ClearCurrentPath()
@@ -422,7 +369,16 @@ public class TileMap : MonoBehaviour
             clickableTiles[x, y].occupyingUnit = selectedUnit;
             selectedUnit.MoveNextTile(cost);
         }
-        
+
+    }
+
+    public void newToolTip(ClickableTile tile)
+    {
+        tooltip.LoadTile(tile);
+        if (tile.occupyingUnit != null)
+        {
+            tooltip.LoadUnit(tile.occupyingUnit);
+        }
     }
 
 }

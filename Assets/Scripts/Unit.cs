@@ -42,8 +42,6 @@ public class Unit : MonoBehaviour
 
     private void OnMouseUp()
     {
-        Debug.Log("Click " + unitName);
-
 
     }
     public List<Node> GetCurrentPath()
@@ -66,7 +64,7 @@ public class Unit : MonoBehaviour
         currentPath.RemoveAt(0);
 
         //now we move to the new first node in currentPath (visually)
-        StartCoroutine(MoveToPosition(transform, map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y), 0.1f, cost));
+        StartCoroutine(MoveToPosition(map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y), 0.1f, cost));
 
         //update unit's X and Y in the data
         tileX = currentPath[0].x;
@@ -81,21 +79,23 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public IEnumerator MoveToPosition(Transform transform, Vector3 position, float timeToMove, int cost)
+    IEnumerator MoveToPosition(Vector3 targetPos, float timeToMove, int cost)
     {
-        var currentPos = transform.position;
-        var t = 0f;
+        Vector3 currentPos = transform.position;
+        float t = 0f;
         while (t < 1)
         {
             t += Time.deltaTime / timeToMove;
-            transform.position = Vector3.Lerp(currentPos, position, t);
+            transform.position = Vector3.Lerp(currentPos, targetPos, t);
             yield return null;
         }
 
         if (currentPath == null) //if movement is complete...
         {
+            map.ClearCurrentPath();
             map.state = TileMap.State.zero;
-            map.GenerateMovementSet(this);
+            map.Dijkstra(this);
+            map.GenerateMovementSet();
         }
         else //if there's still movement left to do...
         {

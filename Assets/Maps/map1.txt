@@ -1,14 +1,12 @@
 //first line for _____ information
 //second line for ____ information
 //third line for _____ information
-MMMMMMMMMMMMMMMMMMMM
-M---hddddf---------M
-M---aWWWWb---------M
-M---aWWWWb---------M
-M---aWWWWb---------M
-M-V-eccccg---------M
-M---------X--------M
-M------------------M
-M-iWWWWMMMMWWWWWWj-M
-M------------------M
-MMMMMMMMMMMMMMMMMMMM
+---hddddf---------
+---aWWWWb------M--
+---aWWWWb------M--
+---aWWWWb------M--
+-V-eccccg------M--
+---------X--------
+-hddddddddddddf---
+Meccccccccccccg---
+M-----------------
