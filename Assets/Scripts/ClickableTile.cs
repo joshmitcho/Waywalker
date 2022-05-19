@@ -41,7 +41,7 @@ public class ClickableTile : MonoBehaviour
     {
         if (hoverHighlight.enabled)
         {
-            float wave = Mathf.Abs(Mathf.Sin(Time.time * 4f) / 10f);
+            float wave = Mathf.Abs(Mathf.Sin(Time.time * 4f) / 5f);
             hoverHighlight.transform.localScale = scale + new Vector3(wave, wave, 0);
 
         }

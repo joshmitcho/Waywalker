@@ -71,6 +71,9 @@ public class Tooltip : MonoBehaviour
         //ClearItems();
         //LoadItem(new TooltipItem(ItemType.tileType, tile.GetTileType()));
         tileType.text = tile.GetTileType();
+        //tileType.outlineWidth = 10.2f;
+        //tileType.outlineColor = new Color32(255, 128, 255, 255);
+
         enabled = true;
     }
 
