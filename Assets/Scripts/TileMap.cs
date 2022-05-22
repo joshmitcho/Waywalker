@@ -374,11 +374,8 @@ public class TileMap : MonoBehaviour
 
     public void newToolTip(ClickableTile tile)
     {
-        tooltip.LoadTile(tile);
-        if (tile.occupyingUnit != null)
-        {
-            tooltip.LoadUnit(tile.occupyingUnit);
-        }
+        tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
+        
     }
 
 }

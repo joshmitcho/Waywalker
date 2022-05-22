@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Tooltip : MonoBehaviour
 {
@@ -10,23 +11,30 @@ public class Tooltip : MonoBehaviour
     bool isSliding;
 
     public TextMeshProUGUI tileType;
+    public Image tileIcon;
 
-    List<TooltipItem> items;
-    public enum ItemType { tileType, movementCost, distToUnit };
+    public TextMeshProUGUI terrainCost;
+    public TextMeshProUGUI distanceToActiveUnit;
 
-    Dictionary<ItemType, int> itemHierarchy = new Dictionary<ItemType, int>
-    {
-        { ItemType.tileType, 0 },
-        { ItemType.movementCost, 1 },
-        { ItemType.distToUnit, 2 }
-    };
+    public Sprite shadeFull;
+    public Sprite shadeHalf;
+    public Sprite frameFull;
+    public Sprite frameHalf;
+    Image shade;
+    public Image frame;
+
+    public GameObject unitTooltip;
+
+    public TextMeshProUGUI unitName;
+    public Image unitIcon;
 
     void Start()
     {
-        enabled = false;
+        gameObject.SetActive(false);
         isInRightCorner = true;
         isSliding = false;
         rect = GetComponent<RectTransform>();
+        shade = GetComponent<Image>();
     }
 
     public void SwapSides()
@@ -35,7 +43,7 @@ public class Tooltip : MonoBehaviour
         {
             if (isInRightCorner)
             {
-                StartCoroutine(Slide(new Vector2(0, 0), new Vector2(8, 8), Vector2.zero, Vector2.zero, 0.5f));
+                StartCoroutine(Slide(new Vector2(0, 0), new Vector2(-40, 8), Vector2.zero, Vector2.zero, 0.5f));
             }
             else
             {
@@ -62,83 +70,70 @@ public class Tooltip : MonoBehaviour
 
             yield return null;
         }
+        rect.anchoredPosition = positionB;
         isInRightCorner = !isInRightCorner;
         isSliding = false;
     }
 
-    public void LoadTile(ClickableTile tile)
+    public void LoadTile(ClickableTile tile, int dist, Unit unit)
     {
-        //ClearItems();
-        //LoadItem(new TooltipItem(ItemType.tileType, tile.GetTileType()));
+        frame.sprite = frameHalf;
+        shade.sprite = shadeHalf;
+        tileIcon.sprite = tile.GetComponent<SpriteRenderer>().sprite;
+        tileIcon.color = tile.GetComponent<SpriteRenderer>().color;
+
+        if (!isInRightCorner && !isSliding)
+        {
+            rect.anchoredPosition = new Vector2(-40, 8);
+        }
+
         tileType.text = tile.GetTileType();
         //tileType.outlineWidth = 10.2f;
         //tileType.outlineColor = new Color32(255, 128, 255, 255);
 
-        enabled = true;
+        terrainCost.text = tile.movementCost.ToString();
+
+        if (dist > unit.remainingMovement || dist < 0)
+            distanceToActiveUnit.color = Color.red;
+        else
+            distanceToActiveUnit.color = Color.white;
+
+        if (dist > 1000 || dist < 0)
+            distanceToActiveUnit.text = "inf";
+        else
+            distanceToActiveUnit.text = dist.ToString();
+
+        gameObject.SetActive(true);
+        
+        if (tile.occupyingUnit != null)
+        {
+            LoadUnit(tile.occupyingUnit); return;
+        }
+        unitTooltip.SetActive(false);
     }
 
-    public void LoadUnit(Unit unit)
+    void LoadUnit(Unit unit)
     {
-        enabled = true;
-    }
-    /*
-    void LoadItem(TooltipItem item)
-    {
-        
-        //if there's no items yet, add item
-        if (items.Count == 0)
+        frame.sprite = frameFull;
+        shade.sprite = shadeFull;
+
+        unitIcon.sprite = unit.GetComponentInChildren<SpriteRenderer>().sprite;
+        unitIcon.color = unit.GetComponentInChildren<SpriteRenderer>().color;
+
+        unitName.text = unit.unitName;
+
+        if (!isInRightCorner && !isSliding)
         {
-            items.Add(item);
-            return;
+            rect.anchoredPosition = new Vector2(8,8);
         }
-        
-        int i = 0;
-        while (i < items.Count)
-        {
-            //if item should come before next item in list, insert it there
-            if (itemHierarchy[item.type] < itemHierarchy[items[i].type])
-            {
-                items.Insert(i, item);
-                return;
-            }
-            i++;
-        } 
-        //if it hasn't been added yet, it must go at the end. Add it
-        items.Add(item);
+
+        unitTooltip.SetActive(true);
     }
-    */
+    
     public void ClearItems()
     {
-        enabled = false;
+        gameObject.SetActive(false);
     }
 
-
-}
-class TooltipItem
-{
-    public Tooltip.ItemType type;
-    public Sprite icon;
-    public string value;
-
-    public override string ToString()
-    {
-        return type + ": " + value;
-    }
-
-    public TooltipItem(Tooltip.ItemType type, string value)
-    {
-        this.type = type;
-        this.value = value;
-        if (type != Tooltip.ItemType.tileType)
-            icon = (Sprite)Resources.Load(iconLookup[type]);
-
-    }
-
-    Dictionary<Tooltip.ItemType, string> iconLookup = new Dictionary<Tooltip.ItemType, string>
-    {
-        { Tooltip.ItemType.tileType, "0" },
-        { Tooltip.ItemType.movementCost, "0" },
-        { Tooltip.ItemType.distToUnit, "0" }
-    };
 
 }
