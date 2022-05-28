@@ -87,7 +87,7 @@ public class Tooltip : MonoBehaviour
             rect.anchoredPosition = new Vector2(-40, 8);
         }
 
-        tileType.text = tile.GetTileType();
+        tileType.text = tile.tileType;
         //tileType.outlineWidth = 10.2f;
         //tileType.outlineColor = new Color32(255, 128, 255, 255);
 

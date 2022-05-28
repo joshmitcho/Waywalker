@@ -93,10 +93,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6457672092536749718}
-  - component: {fileID: 6457672092536749719}
-  - component: {fileID: 6457672092536749713}
+  - component: {fileID: -3509981519411573365}
   m_Layer: 0
-  m_Name: V Blue Unit
+  m_Name: V Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +117,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6457672092536749719
+--- !u!114 &-3509981519411573365
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,34 +126,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 6457672092536749716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ccf9dc8594805da4a8b087afd5d51763, type: 3}
+  m_Script: {fileID: 11500000, guid: ca5f5fe862783d34ba3f3786742abc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Blue
   movementType: 1
   movementSpeed: 30
   remainingMovement: 0
-  diagonalCount: 0
   attackRange: 5
-  initiative: 15
+  initiativeBonus: 0
+  initiative: 0
   tileX: 0
   tileY: 0
+  occupyingTile: {fileID: 0}
   map: {fileID: 0}
-  arrow: {fileID: 0}
   state: 0
---- !u!58 &6457672092536749713
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6457672092536749716}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.25

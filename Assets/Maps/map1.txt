@@ -4,9 +4,9 @@
 ---hddddf---------
 ---aWWWWb------M--
 ---aWWWWb------M--
----aWWWWb------M--
--V-eccccg------M--
----------X--------
+---aWWWWb---V--M--
+-X-eccccg------M--
+------------------
 -hddddddddddddf---
 Meccccccccccccg---
 M-----------------

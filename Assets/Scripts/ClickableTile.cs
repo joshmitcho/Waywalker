@@ -54,7 +54,7 @@ public class ClickableTile : MonoBehaviour
         if (map.state != TileMap.State.unitMoving)
         {
             map.GeneratePathTo(tileX, tileY, withinMovementSet);
-            map.newToolTip(this);
+            map.NewToolTip(this);
         }
     }
 
@@ -106,22 +106,17 @@ public class ClickableTile : MonoBehaviour
         withinAttackSet = false;
     }
 
-    public string GetTileType()
-    {
-        if (tileType.Length > 5)
-        {
-            return tileType[0..5] + ".";
-        }
-        else
-        {
-            return tileType;
-        }
-    }
     private void OnMouseUp()
     {
+        if (occupyingUnit != null)
+        {
+            //clicked a unit instead of the tile underneath
+            return;
+        }
+
         if (!withinMovementSet)
         {
-            Debug.Log("can't move here");
+            //can't move here
         }
         else if (map.state != TileMap.State.unitMoving)
         {

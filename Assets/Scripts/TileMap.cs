@@ -13,6 +13,7 @@ public class TileMap : MonoBehaviour
     public State state = State.zero;
 
     public Tooltip tooltip;
+    public RectTransform actionMenu;
 
     int roundCounter = 0;
     public TextMeshProUGUI roundDisplay;
@@ -98,6 +99,7 @@ public class TileMap : MonoBehaviour
                     un.map = this;
                     activeUnits.Add(un);
                     clickableTiles[x, y].occupyingUnit = un;
+                    un.occupyingTile = clickableTiles[x, y];
 
                 }
                 else
@@ -202,6 +204,12 @@ public class TileMap : MonoBehaviour
 
     void RollInitiative()
     {
+        Dice init = new Dice(1, 20, 0);
+        foreach (Unit un in activeUnits)
+        {
+            un.initiative = init.Roll() + un.initiativeBonus;
+        }
+
         activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));
     }
 
@@ -214,6 +222,7 @@ public class TileMap : MonoBehaviour
 
     public void NextTurn()
     {
+
         if (turnQueue.Count == 0)
         {
             NextRound();
@@ -227,6 +236,8 @@ public class TileMap : MonoBehaviour
         selectedUnit.ResetTurnValues();
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
         endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
+
+        OpenMenu();
 
         Dijkstra(selectedUnit);
         GenerateMovementSet();
@@ -346,7 +357,7 @@ public class TileMap : MonoBehaviour
         }
 
         //This means currentPath now contains a route from source to target
-        selectedUnit.SetCurrentPath(currentPath);
+        selectedUnit.currentPath = currentPath;
 
         if (withinMovementSet)
         {
@@ -356,26 +367,33 @@ public class TileMap : MonoBehaviour
 
     public void ClearCurrentPath()
     {
-        selectedUnit.SetCurrentPath(null);
+        selectedUnit.currentPath = null;
         arrowHolder.GetComponent<Arrow>().DrawArrow(null);
     }
 
     public void MoveUnit(int x, int y, int cost)
     {
-        if (selectedUnit.GetCurrentPath() != null)
+        if (selectedUnit.currentPath != null)
         {
             state = State.unitMoving;
             clickableTiles[selectedUnit.tileX, selectedUnit.tileY].occupyingUnit = null;
             clickableTiles[x, y].occupyingUnit = selectedUnit;
+            selectedUnit.occupyingTile = clickableTiles[x, y];
             selectedUnit.MoveNextTile(cost);
         }
 
     }
 
-    public void newToolTip(ClickableTile tile)
+    public void NewToolTip(ClickableTile tile)
     {
         tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
         
+    }
+
+    public void OpenMenu()
+    {
+        actionMenu.transform.position = RectTransformUtility.WorldToScreenPoint(Camera.main, selectedUnit.transform.position);
+        actionMenu.transform.position += new Vector3(8, 8, 0);
     }
 
 }

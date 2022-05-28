@@ -13,18 +13,20 @@ public class Unit : MonoBehaviour
     public MovementType movementType = MovementType.walking;
     public int movementSpeed = 30;
     public int remainingMovement;
-    public int diagonalCount = 0;
 
     public int attackRange = 5;
+    public Dice attackPower = new Dice(2, 6, 3);
 
-    public int initiative = 20;
+    public int initiativeBonus = 0;
+    public int initiative;
 
     public int tileX;
     public int tileY;
+    public ClickableTile occupyingTile;
 
     public TileMap map;
 
-    List<Node> currentPath = null;
+    public List<Node> currentPath = null;
     public State state = State.zero;
 
     private void Awake()
@@ -32,25 +34,9 @@ public class Unit : MonoBehaviour
         ResetTurnValues();
     }
 
-    
-
     public void ResetTurnValues()
     {
         remainingMovement = movementSpeed;
-        diagonalCount = 0;
-    }
-
-    private void OnMouseUp()
-    {
-
-    }
-    public List<Node> GetCurrentPath()
-    {
-        return currentPath;
-    }
-    public void SetCurrentPath(List<Node> path)
-    {
-        currentPath = path;
     }
     
     public void MoveNextTile(int cost)
@@ -65,6 +51,14 @@ public class Unit : MonoBehaviour
 
         //now we move to the new first node in currentPath (visually)
         StartCoroutine(MoveToPosition(map.TileCoordToWorldCoord(currentPath[0].x, currentPath[0].y), 0.1f, cost));
+
+        if (tileX > currentPath[0].x)
+        {
+            GetComponentInChildren<SpriteRenderer>().flipX = true;
+        } else if (tileX < currentPath[0].x)
+        {
+            GetComponentInChildren<SpriteRenderer>().flipX = false;
+        }
 
         //update unit's X and Y in the data
         tileX = currentPath[0].x;
@@ -81,12 +75,12 @@ public class Unit : MonoBehaviour
 
     IEnumerator MoveToPosition(Vector3 targetPos, float timeToMove, int cost)
     {
-        Vector3 currentPos = transform.position;
+        Vector3 startPos = transform.position;
         float t = 0f;
         while (t < 1)
         {
             t += Time.deltaTime / timeToMove;
-            transform.position = Vector3.Lerp(currentPos, targetPos, t);
+            transform.position = Vector3.Lerp(startPos, targetPos, t);
             yield return null;
         }
 
@@ -96,6 +90,7 @@ public class Unit : MonoBehaviour
             map.state = TileMap.State.zero;
             map.Dijkstra(this);
             map.GenerateMovementSet();
+            map.NewToolTip(occupyingTile);
         }
         else //if there's still movement left to do...
         {
