@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using TMPro;
 using System.IO;
+using UnityEngine.UI;
 
 public class TileMap : MonoBehaviour
 {
@@ -13,12 +14,14 @@ public class TileMap : MonoBehaviour
     public State state = State.zero;
 
     public Tooltip tooltip;
+
     public RectTransform actionMenu;
+    Button[] buttons;
+
 
     int roundCounter = 0;
     public TextMeshProUGUI roundDisplay;
     public TextMeshProUGUI turnDisplay;
-    public TextMeshProUGUI endTurnDisplay;
 
     public List<Unit> activeUnits;
     Unit selectedUnit;
@@ -39,6 +42,7 @@ public class TileMap : MonoBehaviour
 
     private void Start()
     {
+        buttons = actionMenu.gameObject.GetComponentsInChildren<Button>();
         GenerateMapTiles("map1.txt");
         GeneratePathfindingGraph();
         RollInitiative();
@@ -200,6 +204,8 @@ public class TileMap : MonoBehaviour
             }
         }
 
+        actionMenu.gameObject.SetActive(false);
+
     }
 
     void RollInitiative()
@@ -235,13 +241,10 @@ public class TileMap : MonoBehaviour
         selectedUnit = turnQueue[0];
         selectedUnit.ResetTurnValues();
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
-        endTurnDisplay.text = "End " + selectedUnit.unitName + "'s Turn";
-
-        OpenMenu();
 
         Dijkstra(selectedUnit);
-        GenerateMovementSet();
-        
+        OpenActionMenu();
+
         turnQueue.RemoveAt(0);
     }
 
@@ -390,10 +393,22 @@ public class TileMap : MonoBehaviour
         
     }
 
-    public void OpenMenu()
+    public void OpenActionMenu()
     {
-        actionMenu.transform.position = RectTransformUtility.WorldToScreenPoint(Camera.main, selectedUnit.transform.position);
+
+        foreach (Node n in dist.Keys)
+        {
+            clickableTiles[n.x, n.y].RemoveFromAllSets();
+        }
+
+        //can click Move/Attack if you have movement/attack actions remaining
+        buttons[1].interactable = selectedUnit.remainingMovement > 0;
+        buttons[0].interactable = selectedUnit.remainingAttackActions > 0;
+
+        actionMenu.transform.position = cam.WorldToScreenPoint(selectedUnit.transform.position);
         actionMenu.transform.position += new Vector3(8, 8, 0);
+
+        actionMenu.gameObject.SetActive(true);
     }
 
 }

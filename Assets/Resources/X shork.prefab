@@ -50,6 +50,7 @@ MonoBehaviour:
   movementSpeed: 30
   remainingMovement: 0
   attackRange: 5
+  initiativeBonus: 20
   initiative: 20
   tileX: 0
   tileY: 0

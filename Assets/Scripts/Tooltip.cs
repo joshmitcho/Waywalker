@@ -42,13 +42,9 @@ public class Tooltip : MonoBehaviour
         if (!isSliding)
         {
             if (isInRightCorner)
-            {
                 StartCoroutine(Slide(new Vector2(0, 0), new Vector2(-40, 8), Vector2.zero, Vector2.zero, 0.5f));
-            }
             else
-            {
                 StartCoroutine(Slide(new Vector2(1, 0), new Vector2(-8, 8), Vector2.zero, Vector2.zero, 0.5f));
-            }
         }
         
     }

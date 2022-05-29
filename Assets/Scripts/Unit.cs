@@ -16,6 +16,8 @@ public class Unit : MonoBehaviour
 
     public int attackRange = 5;
     public Dice attackPower = new Dice(2, 6, 3);
+    public int numAttackActions;
+    public int remainingAttackActions;
 
     public int initiativeBonus = 0;
     public int initiative;
@@ -37,6 +39,7 @@ public class Unit : MonoBehaviour
     public void ResetTurnValues()
     {
         remainingMovement = movementSpeed;
+        remainingAttackActions = numAttackActions;
     }
     
     public void MoveNextTile(int cost)
@@ -89,7 +92,7 @@ public class Unit : MonoBehaviour
             map.ClearCurrentPath();
             map.state = TileMap.State.zero;
             map.Dijkstra(this);
-            map.GenerateMovementSet();
+            map.OpenActionMenu();
             map.NewToolTip(occupyingTile);
         }
         else //if there's still movement left to do...
