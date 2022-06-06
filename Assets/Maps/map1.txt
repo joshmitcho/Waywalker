@@ -4,8 +4,8 @@
 ---hddddf---------
 ---aWWWWb------M--
 ---aWWWWb------M--
----aWWWWb---V--M--
--X-eccccg------M--
+---aWWWWb--XV--M--
+---eccccg------M--
 ------------------
 -hddddddddddddf---
 Meccccccccccccg---

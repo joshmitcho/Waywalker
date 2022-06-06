@@ -14,9 +14,9 @@ public class Unit : MonoBehaviour
     public int movementSpeed = 30;
     public int remainingMovement;
 
-    public int attackRange = 5;
+    public Weapon mainHand;
     public Dice attackPower = new Dice(2, 6, 3);
-    public int numAttackActions;
+    public int numAttackActions = 1;
     public int remainingAttackActions;
 
     public int initiativeBonus = 0;
@@ -34,6 +34,27 @@ public class Unit : MonoBehaviour
     private void Awake()
     {
         ResetTurnValues();
+        mainHand = new Weapon("Greataxe", "Two-handed Axe", new Attack(5, new Dice(1, 20, 0), new Dice(3, 12, 2)));
+    }
+
+    public int GetAttackRange()
+    {
+        return mainHand.primaryAttack.range;
+    }
+
+    public int[] Attack()
+    {
+        int[] rolls = mainHand.primaryAttack.damageDice.Roll();
+
+        Debug.Log("Attack: " + mainHand + ", " + rolls[0]);
+        remainingAttackActions--;
+
+        foreach (int r in rolls)
+        {
+            Debug.Log(r);
+        }
+
+        return rolls;
     }
 
     public void ResetTurnValues()

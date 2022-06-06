@@ -6,8 +6,14 @@ public class Weapon : Item
 {
     public Attack primaryAttack;
 
-    public Weapon(string nm, string desc, Attack primary) : base(nm, desc)
+    public Weapon(string name, string desc, Attack primary) : base(name, desc)
     {
         primaryAttack = primary;
     }
+
+    public override string ToString()
+    {
+        return name;
+    }
+
 }

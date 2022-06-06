@@ -13,18 +13,25 @@ public class Dice
         values[2] = z;
     }
 
-    public int Roll()
+    public int[] Roll() //[0] is the total result, [1]..[n] is the individual dice values, last is the modifier
     {
+        int[] rolls = new int[values[0] + 2]; //first is the total result, last is the modifier
         int rollTotal = 0;
 
-        for (int i = 0; i < values[0]; i++)
+        for (int i = 1; i < values[0]+1; i++)
         {
             int rollVal = Random.Range(1, values[1]);
+
+            rolls[i] = rollVal;
+
             rollTotal += rollVal;
         }
         rollTotal += values[2];
 
-        return rollTotal;
+        rolls[0] = rollTotal; //first is the total result
+        rolls[values[0]+1] = values[2]; //last is the modifier
+
+        return rolls;
     }
 
     public override string ToString()

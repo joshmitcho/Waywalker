@@ -10,7 +10,7 @@ public class TileMap : MonoBehaviour
 
     public Camera cam;
 
-    public enum State { zero, unitMoving };
+    public enum State { zero, choosingMovement, unitMoving, choosingAttack };
     public State state = State.zero;
 
     public Tooltip tooltip;
@@ -24,7 +24,7 @@ public class TileMap : MonoBehaviour
     public TextMeshProUGUI turnDisplay;
 
     public List<Unit> activeUnits;
-    Unit selectedUnit;
+    public Unit selectedUnit;
 
     List<Unit> turnQueue;
 
@@ -35,7 +35,8 @@ public class TileMap : MonoBehaviour
 
     ClickableTile[,] clickableTiles;
 
-    public GameObject arrowHolder;
+    public Arrow arrow;
+    public DiceHandler diceHandler;
 
     int mapSizeX;
     int mapSizeY;
@@ -43,6 +44,7 @@ public class TileMap : MonoBehaviour
     private void Start()
     {
         buttons = actionMenu.gameObject.GetComponentsInChildren<Button>();
+        diceHandler.GenerateDieBlanks(6);
         GenerateMapTiles("map1.txt");
         GeneratePathfindingGraph();
         RollInitiative();
@@ -66,7 +68,7 @@ public class TileMap : MonoBehaviour
         cam.transform.position = new Vector3(mapSizeX/2f - .5f, mapSizeY/2f - .5f, -10f);
 
         //generates arrow segments for later
-        arrowHolder.GetComponent<Arrow>().GenerateArrowSegments(mapSizeX, mapSizeY);
+        arrow.GenerateArrowSegments(mapSizeX, mapSizeY);
 
         //Allocate our map tiles and unit spots
         units = new int[mapSizeX, mapSizeY];
@@ -192,18 +194,44 @@ public class TileMap : MonoBehaviour
 
         foreach (Node n in dist.Keys)
         {
+            clickableTiles[n.x, n.y].costToFinishHere = (int)dist[n];
+
             if (dist[n] <= selectedUnit.remainingMovement + .5 && dist[n] != 0)
             {
                 clickableTiles[n.x, n.y].AddToMovementSet();
-                clickableTiles[n.x, n.y].costToFinishHere = (int)dist[n];
             }
             else
             {
                 clickableTiles[n.x, n.y].RemoveFromAllSets();
-                clickableTiles[n.x, n.y].costToFinishHere = 0;
             }
         }
 
+        state = State.choosingMovement;
+        actionMenu.gameObject.SetActive(false);
+
+    }
+
+    public void GenerateAttackSet()
+    {
+        //Dijkstra's Algorithm for shortest path
+        //dist relates each node to it's distance to source
+        //Dictionary<Node, float> dist = dijkstra.Item1;
+        //prev holds the steps for the shortest path to source
+        //Dictionary<Node, Node> prev = dijkstra.Item2;
+
+        foreach (Node n in dist.Keys)
+        {
+            if (dist[n] <= selectedUnit.GetAttackRange() + .5 && dist[n] != 0)
+            {
+                clickableTiles[n.x, n.y].AddToAttackSet();
+            }
+            else
+            {
+                clickableTiles[n.x, n.y].RemoveFromAllSets();
+            }
+        }
+
+        state = State.choosingAttack;
         actionMenu.gameObject.SetActive(false);
 
     }
@@ -213,7 +241,7 @@ public class TileMap : MonoBehaviour
         Dice init = new Dice(1, 20, 0);
         foreach (Unit un in activeUnits)
         {
-            un.initiative = init.Roll() + un.initiativeBonus;
+            un.initiative = init.Roll()[0] + un.initiativeBonus; //Roll()[0] is always the total roll value
         }
 
         activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));
@@ -364,14 +392,14 @@ public class TileMap : MonoBehaviour
 
         if (withinMovementSet)
         {
-            arrowHolder.GetComponent<Arrow>().DrawArrow(currentPath);
+            arrow.DrawArrow(currentPath);
         }
     }
 
     public void ClearCurrentPath()
     {
         selectedUnit.currentPath = null;
-        arrowHolder.GetComponent<Arrow>().DrawArrow(null);
+        arrow.DrawArrow(null);
     }
 
     public void MoveUnit(int x, int y, int cost)
@@ -387,10 +415,15 @@ public class TileMap : MonoBehaviour
 
     }
 
+    public void Attack()
+    {
+        diceHandler.DrawDice(selectedUnit.Attack(), selectedUnit);
+    }
+
     public void NewToolTip(ClickableTile tile)
     {
-        tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
-        
+        //tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
+        tooltip.LoadTile(tile, tile.costToFinishHere, selectedUnit);
     }
 
     public void OpenActionMenu()
@@ -402,11 +435,32 @@ public class TileMap : MonoBehaviour
         }
 
         //can click Move/Attack if you have movement/attack actions remaining
-        buttons[1].interactable = selectedUnit.remainingMovement > 0;
-        buttons[0].interactable = selectedUnit.remainingAttackActions > 0;
+        
+        if (selectedUnit.remainingMovement > 0)
+        {
+            buttons[1].interactable = true;
+            buttons[1].GetComponentInChildren<TextMeshProUGUI>().alpha = 1f;
+        }
+        else
+        {
+            buttons[1].interactable = false;
+            buttons[1].GetComponentInChildren<TextMeshProUGUI>().alpha = 0.25f;
+        }
 
-        actionMenu.transform.position = cam.WorldToScreenPoint(selectedUnit.transform.position);
-        actionMenu.transform.position += new Vector3(8, 8, 0);
+        if (selectedUnit.remainingAttackActions > 0)
+        {
+            buttons[0].interactable = true;
+            buttons[0].GetComponentInChildren<TextMeshProUGUI>().alpha = 1f;
+
+        }
+        else
+        {
+            buttons[0].interactable = false;
+            buttons[0].GetComponentInChildren<TextMeshProUGUI>().alpha = 0.25f;
+        }
+
+
+        actionMenu.transform.position = cam.WorldToScreenPoint(selectedUnit.transform.position) + new Vector3(8, 8, 0);
 
         actionMenu.gameObject.SetActive(true);
     }

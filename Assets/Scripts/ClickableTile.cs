@@ -83,7 +83,14 @@ public class ClickableTile : MonoBehaviour
         withinMovementSet = true;
         StartCoroutine(animateIn(movementSetHighlight, 0.25f));
     }
-    
+
+    public void AddToAttackSet()
+    {
+        attackSetHighlight.enabled = true;
+        withinAttackSet = true;
+        StartCoroutine(animateIn(attackSetHighlight, 0.25f));
+    }
+
     IEnumerator animateIn(SpriteRenderer rend, float timeToMove)
     {
         var goalScale = rend.transform.localScale;
@@ -108,19 +115,15 @@ public class ClickableTile : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (occupyingUnit != null)
-        {
-            //clicked a unit instead of the tile underneath
-            return;
-        }
-
-        if (!withinMovementSet)
-        {
-            //can't move here
-        }
-        else if (map.state != TileMap.State.unitMoving)
+        if (withinMovementSet && map.state == TileMap.State.choosingMovement && occupyingUnit == null)
         {
             map.MoveUnit(tileX, tileY, costToFinishHere);
         }
+
+        if (withinAttackSet && map.state == TileMap.State.choosingAttack && occupyingUnit != null)
+        {
+            map.Attack();
+        }
+
     }
 }
