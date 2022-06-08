@@ -1,0 +1,28 @@
+{
+	"Items": [
+		{
+			"key": "-",
+			"tileType": "Plain",
+			"isWalkable": true,
+			"movementCost": 5,
+			"sprite": "plain",
+			"rotation": 0
+        },
+        {
+			"key": "W",
+            "tileType": "Water",
+			"isWalkable": true,
+			"movementCost": 20,
+			"sprite": "water",
+			"rotation": 0
+        },
+		{
+			"key": "M",
+            "tileType": "Mntn.",
+			"isWalkable": false,
+			"movementCost": 5,
+			"sprite": "mountain",
+			"rotation": 0
+        }
+	]
+}

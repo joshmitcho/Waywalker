@@ -37,6 +37,7 @@ public class TileMap : MonoBehaviour
 
     public Arrow arrow;
     public DiceHandler diceHandler;
+    public GameObject tilePrefab;
 
     int mapSizeX;
     int mapSizeY;
@@ -45,7 +46,7 @@ public class TileMap : MonoBehaviour
     {
         buttons = actionMenu.gameObject.GetComponentsInChildren<Button>();
         diceHandler.GenerateDieBlanks(6);
-        GenerateMapTiles("map1.txt");
+        GenerateMapTiles("map1");
         GeneratePathfindingGraph();
         RollInitiative();
         NextRound();
@@ -54,7 +55,14 @@ public class TileMap : MonoBehaviour
 
     void GenerateMapTiles(string filename)
     {
-        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename);
+        string tileJSON = File.ReadAllText("Assets/Maps/" + filename + "_data.json");
+        Dictionary<char, Tile> tileDict = new Dictionary<char, Tile>();
+        foreach (Tile t in JsonHelper.FromJson<Tile>(tileJSON))
+        {
+            tileDict[t.key[0]] = t;
+        }
+
+        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename + ".txt");
 
         //read and interpret the 3 lines of info before the map begins
         //code code code
@@ -110,13 +118,22 @@ public class TileMap : MonoBehaviour
                 }
                 else
                 {
-                    tileGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
 
+                    tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
+                    
                     ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileType = tileDict[letter].tileType;
+                    ct.isWalkable = tileDict[letter].isWalkable;
+                    ct.movementCost = tileDict[letter].movementCost;
+                    
+                    tileGO.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(tileDict[letter].sprite);
+
+
                     ct.tileX = x;
                     ct.tileY = y;
                     ct.map = this;
                     clickableTiles[x, y] = ct;
+                    
                 }
             }
         }
@@ -196,7 +213,13 @@ public class TileMap : MonoBehaviour
         {
             clickableTiles[n.x, n.y].costToFinishHere = (int)dist[n];
 
-            if (dist[n] <= selectedUnit.remainingMovement + .5 && dist[n] != 0)
+            //if tile is unoccupied, within reach, and not the one we're standing on already...
+            //or if the tile is occupied but by a non-enemy...
+            if (clickableTiles[n.x, n.y].occupyingUnit == null
+                && dist[n] <= selectedUnit.remainingMovement + .5
+                && dist[n] != 0
+                || (clickableTiles[n.x, n.y].occupyingUnit != null
+                    && clickableTiles[n.x, n.y].occupyingUnit.GetType() != typeof(Enemy)))
             {
                 clickableTiles[n.x, n.y].AddToMovementSet();
             }

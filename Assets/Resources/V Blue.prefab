@@ -130,10 +130,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Blue
+  diceColour: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
+  numColour: {r: 0, g: 0, b: 0, a: 1}
   movementType: 1
   movementSpeed: 30
   remainingMovement: 0
-  attackRange: 5
+  numAttackActions: 1
+  remainingAttackActions: 0
   initiativeBonus: 0
   initiative: 0
   tileX: 0

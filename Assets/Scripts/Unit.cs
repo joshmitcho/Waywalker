@@ -10,6 +10,9 @@ public class Unit : MonoBehaviour
 
     public string unitName;
 
+    public Color diceColour;
+    public Color numColour;
+
     public MovementType movementType = MovementType.walking;
     public int movementSpeed = 30;
     public int remainingMovement;

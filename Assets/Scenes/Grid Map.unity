@@ -683,6 +683,7 @@ MonoBehaviour:
   selectedUnit: {fileID: 0}
   arrow: {fileID: 1399960758}
   diceHandler: {fileID: 985011522}
+  tilePrefab: {fileID: 7524592953109944505, guid: 4e2ba7ca2fd05cd45a73a100fb5f426a, type: 3}
 --- !u!1 &469771107
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,7 +1751,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 985011520}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ff3b6266baaca24086cd7167976bce8, type: 3}
+  m_Script: {fileID: 11500000, guid: d8fd40386a5306a4e8c76499be43bc2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 346171136}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ClickableTile : MonoBehaviour
 {
@@ -126,4 +127,14 @@ public class ClickableTile : MonoBehaviour
         }
 
     }
+}
+[Serializable]
+public class Tile
+{
+    public string key;
+    public string tileType;
+    public bool isWalkable;
+    public int movementCost;
+    public string sprite;
+    public int rotation;
 }

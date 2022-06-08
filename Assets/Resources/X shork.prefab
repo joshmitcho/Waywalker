@@ -46,10 +46,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitName: Shork
+  diceColour: {r: 0.33962262, g: 0.24374194, b: 0.1198291, a: 1}
+  numColour: {r: 0, g: 1, b: 0, a: 1}
   movementType: 0
   movementSpeed: 30
   remainingMovement: 0
-  attackRange: 5
+  numAttackActions: 1
+  remainingAttackActions: 0
   initiativeBonus: 20
   initiative: 20
   tileX: 0
