@@ -123,7 +123,7 @@ public class ClickableTile : MonoBehaviour
 
         if (withinAttackSet && map.state == TileMap.State.choosingAttack && occupyingUnit != null)
         {
-            map.Attack();
+            map.Attack(occupyingUnit);
         }
 
     }

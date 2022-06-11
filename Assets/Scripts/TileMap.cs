@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class TileMap : MonoBehaviour
 {
     public Camera cam;
-    public P p;
     public enum State { zero, choosingMovement, unitMoving, choosingAttack };
     public State state = State.zero;
 
@@ -72,7 +71,7 @@ public class TileMap : MonoBehaviour
             }
             else
             {
-                p.rint("No file at: " + path);
+                print("No file at: " + path);
             }
         }
 
@@ -252,7 +251,7 @@ public class TileMap : MonoBehaviour
             //if tile is unoccupied, within reach, and not the one we're standing on already...
             //or if the tile is occupied but by a non-enemy...
             if (clickableTiles[n.x, n.y].occupyingUnit == null
-                && dist[n] <= selectedUnit.remainingMovement + .5
+                && dist[n] <= selectedUnit.currentMovement + .5
                 && dist[n] != 0
                 || (clickableTiles[n.x, n.y].occupyingUnit != null
                     && clickableTiles[n.x, n.y].occupyingUnit.GetType() != typeof(Enemy)))
@@ -464,9 +463,10 @@ public class TileMap : MonoBehaviour
 
     }
 
-    public void Attack()
+    public void Attack(Unit target)
     {
-        diceHandler.DrawDice(selectedUnit.Attack(), selectedUnit);
+        int damage = diceHandler.DrawDice(selectedUnit.Attack(), selectedUnit);
+        target.TakeDamage(damage);
     }
 
     public void NewToolTip(ClickableTile tile)
@@ -483,7 +483,7 @@ public class TileMap : MonoBehaviour
 
         //can click Move/Attack if you have movement/attack actions remaining
         
-        if (selectedUnit.remainingMovement > 0)
+        if (selectedUnit.currentMovement > 0)
         {
             buttons[1].interactable = true;
             buttons[1].GetComponentInChildren<TextMeshProUGUI>().alpha = 1f;

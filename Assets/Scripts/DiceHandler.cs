@@ -36,7 +36,7 @@ public class DiceHandler : MonoBehaviour
         }
     }
 
-    public void DrawDice(int[] values, Unit unit)
+    public int DrawDice(int[] values, Unit unit)
     {
         Vector3 anchor = map.cam.WorldToScreenPoint(unit.transform.position) + new Vector3(0, 32, 0);
 
@@ -76,9 +76,10 @@ public class DiceHandler : MonoBehaviour
         //put the result in the correct position
         dice[0].transform.position = anchor + new Vector3(0, 32, 0);
 
-
         map.state = TileMap.State.zero;
         map.OpenActionMenu();
+
+        return values[0];
 
     }
     

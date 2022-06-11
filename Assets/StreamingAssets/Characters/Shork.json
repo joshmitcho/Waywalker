@@ -1,0 +1,21 @@
+{
+	"name": "Shork",
+	"team": "PC",
+	"alignment":"Chaotic Good",
+	"Armor Class": 17,
+	"Hit Points": 30,
+	"walkingSpeed": 30,
+	"swimmingSpeed": 20,
+	"STR": 21,
+	"DEX": 9,
+	"CON": 15,
+	"INT": 18,
+	"WIS": 15,
+	"CHA": 18,
+	"Saving Throws": "CON +6, INT +8, WIS +6",
+	"Skills": "History +12, Perception +10",
+	"Senses": "Darkvision 120 ft.,  Passive Perception 20",
+	"Languages": "Deep Speech, Telepathy 120 ft.",
+	"Traits": "Amphibious. Shork can breathe air and water.",
+	"Sprite": "shork.png"
+}

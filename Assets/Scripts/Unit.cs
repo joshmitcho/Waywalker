@@ -15,10 +15,15 @@ public class Unit : MonoBehaviour
 
     public MovementType movementType = MovementType.walking;
     public int movementSpeed = 30;
-    public int remainingMovement;
+    public int currentMovement;
+
+    public int HP = 30;
+    public int currentHP;
+
+    public int AC = 18;
+    public int currentAC;
 
     public Weapon mainHand;
-    public Dice attackPower = new Dice(2, 6, 3);
     public int numAttackActions = 1;
     public int remainingAttackActions;
 
@@ -38,6 +43,17 @@ public class Unit : MonoBehaviour
     {
         ResetTurnValues();
         mainHand = new Weapon("Greataxe", "Two-handed Axe", new Attack(5, new Dice(1, 20, 0), new Dice(3, 12, 2)));
+
+    }
+
+    public int GetModifier(int score)
+    {
+        float output = (score - 10) / 2f;
+
+        if (output >= 0)
+            return (int)output;
+        else
+            return (int)(output - 0.5f);
     }
 
     public int GetAttackRange()
@@ -49,20 +65,20 @@ public class Unit : MonoBehaviour
     {
         int[] rolls = mainHand.primaryAttack.damageDice.Roll();
 
-        Debug.Log("Attack: " + mainHand + ", " + rolls[0]);
+        print("Attack: " + mainHand + ", " + rolls[0]);
         remainingAttackActions--;
-
-        foreach (int r in rolls)
-        {
-            Debug.Log(r);
-        }
 
         return rolls;
     }
 
+    public void TakeDamage(int damage)
+    {
+        currentHP -= damage;
+    }
+
     public void ResetTurnValues()
     {
-        remainingMovement = movementSpeed;
+        currentMovement = movementSpeed;
         remainingAttackActions = numAttackActions;
     }
     
@@ -94,7 +110,7 @@ public class Unit : MonoBehaviour
         if (currentPath.Count == 1)
         {
             //then we're standing on our final destination: we're done
-            remainingMovement -= cost;
+            currentMovement -= cost;
             currentPath = null;
             state = State.zero;
         }

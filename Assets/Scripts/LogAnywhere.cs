@@ -13,14 +13,15 @@ public class LogAnywhere : MonoBehaviour
             string d = System.Environment.GetFolderPath(
               System.Environment.SpecialFolder.Desktop) + "/YOUR_LOGS";
             System.IO.Directory.CreateDirectory(d);
-            filename = d + "/my_happy_log.txt";
+            filename = d + "/" + System.DateTime.Now.ToString("yyyy/MM/dd") + ".log";
         }
 
         try
         {
-            System.IO.File.AppendAllText(filename, System.DateTime.Now + "\n");
-            System.IO.File.AppendAllText(filename, stackTrace + "\n");
             System.IO.File.AppendAllText(filename, logString + "\n");
+            System.IO.File.AppendAllText(filename, stackTrace);
+            System.IO.File.AppendAllText(filename, "--------------------------------------------------------\n");
+
         }
         catch { }
     }

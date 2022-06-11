@@ -15,7 +15,7 @@ public class Tooltip : MonoBehaviour
 
     public TextMeshProUGUI terrainCost;
     public TextMeshProUGUI distanceToActiveUnit;
-
+    
     public Sprite shadeFull;
     public Sprite shadeHalf;
     public Sprite frameFull;
@@ -27,6 +27,8 @@ public class Tooltip : MonoBehaviour
 
     public TextMeshProUGUI unitName;
     public Image unitIcon;
+    public TextMeshProUGUI HP;
+    public TextMeshProUGUI AC;
 
     void Start()
     {
@@ -89,7 +91,7 @@ public class Tooltip : MonoBehaviour
 
         terrainCost.text = tile.movementCost.ToString();
 
-        if (dist > unit.remainingMovement || dist < 0)
+        if (dist > unit.currentMovement || dist < 0)
             distanceToActiveUnit.color = Color.red;
         else
             distanceToActiveUnit.color = Color.white;
@@ -117,6 +119,8 @@ public class Tooltip : MonoBehaviour
         unitIcon.color = unit.GetComponentInChildren<SpriteRenderer>().color;
 
         unitName.text = unit.unitName;
+        HP.text = unit.currentHP.ToString();
+        AC.text = unit.currentAC.ToString();
 
         if (!isInRightCorner && !isSliding)
         {

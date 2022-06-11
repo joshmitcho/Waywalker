@@ -50,7 +50,11 @@ MonoBehaviour:
   numColour: {r: 0, g: 1, b: 0, a: 1}
   movementType: 0
   movementSpeed: 30
-  remainingMovement: 0
+  currentMovement: 0
+  HP: 30
+  currentHP: 30
+  AC: 18
+  currentAC: 0
   numAttackActions: 1
   remainingAttackActions: 0
   initiativeBonus: 20
