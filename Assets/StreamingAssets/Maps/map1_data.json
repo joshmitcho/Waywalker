@@ -5,7 +5,7 @@
 			"tileType": "Plain",
 			"isWalkable": true,
 			"movementCost": 5,
-			"sprite": "plain",
+			"sprite": "plain.png",
 			"rotation": 0
         },
         {
@@ -13,7 +13,7 @@
             "tileType": "Water",
 			"isWalkable": true,
 			"movementCost": 20,
-			"sprite": "water",
+			"sprite": "water.png",
 			"rotation": 0
         },
 		{
@@ -21,7 +21,7 @@
             "tileType": "Mntn.",
 			"isWalkable": false,
 			"movementCost": 5,
-			"sprite": "mountain",
+			"sprite": "mountain.png",
 			"rotation": 0
         }
 	]

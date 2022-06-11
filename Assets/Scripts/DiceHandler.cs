@@ -13,7 +13,7 @@ public class DiceHandler : MonoBehaviour
     public GameObject diePrefab;
 
     List<GameObject> dice = new List<GameObject>();
-    
+
     public void GenerateDieBlanks(int numDice)
     {
         sprites = Resources.LoadAll("Dice", typeof(Sprite));
@@ -70,7 +70,7 @@ public class DiceHandler : MonoBehaviour
         //modifier isn't a die, so it's a grey circle with white text
         dice[values.Length - 1].GetComponent<Image>().color = Color.grey;
         dice[values.Length - 1].GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
-        dice[values.Length - 1].GetComponent<Image>().sprite = (Sprite)sprites[2];
+        //dice[values.Length - 1].GetComponent<Image>().sprite = (Sprite)sprites[2];
 
 
         //put the result in the correct position

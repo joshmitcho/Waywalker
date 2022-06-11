@@ -7,9 +7,8 @@ using UnityEngine.UI;
 
 public class TileMap : MonoBehaviour
 {
-
     public Camera cam;
-
+    public P p;
     public enum State { zero, choosingMovement, unitMoving, choosingAttack };
     public State state = State.zero;
 
@@ -38,12 +37,14 @@ public class TileMap : MonoBehaviour
     public Arrow arrow;
     public DiceHandler diceHandler;
     public GameObject tilePrefab;
+    public GameObject unitPrefab;
 
     int mapSizeX;
     int mapSizeY;
 
     private void Start()
     {
+        
         buttons = actionMenu.gameObject.GetComponentsInChildren<Button>();
         diceHandler.GenerateDieBlanks(6);
         GenerateMapTiles("map1");
@@ -53,16 +54,45 @@ public class TileMap : MonoBehaviour
         NextTurn();
     }
 
+    private Dictionary<char, Sprite> LoadTileSprites(Dictionary<char, Tile> tileDict)
+    {
+        Dictionary<char, Sprite> sprites = new Dictionary<char, Sprite>();
+
+        foreach (char key in tileDict.Keys)
+        {
+            string path = Application.streamingAssetsPath + "/Sprites/" + tileDict[key].sprite;
+            
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                Texture2D texture = new Texture2D(1, 1);
+                texture.LoadImage(bytes);
+                sprites[key] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f), 32f, 0, SpriteMeshType.FullRect);
+            }
+            else
+            {
+                p.rint("No file at: " + path);
+            }
+        }
+
+        return sprites;
+
+    }
+
     void GenerateMapTiles(string filename)
     {
-        string tileJSON = File.ReadAllText("Assets/Maps/" + filename + "_data.json");
+        string path = Application.streamingAssetsPath + "/Maps/" + filename;
+
+        string tileJSON = File.ReadAllText(path + "_data.json");
         Dictionary<char, Tile> tileDict = new Dictionary<char, Tile>();
         foreach (Tile t in JsonHelper.FromJson<Tile>(tileJSON))
         {
             tileDict[t.key[0]] = t;
         }
+        Dictionary<char, Sprite> sprites = LoadTileSprites(tileDict);
 
-        string[] mapText = File.ReadAllLines("Assets/Maps/" + filename + ".txt");
+        string[] mapText = File.ReadAllLines(path + ".txt");
 
         //read and interpret the 3 lines of info before the map begins
         //code code code
@@ -97,16 +127,22 @@ public class TileMap : MonoBehaviour
 
                 if (letter == 'X' || letter == 'V') //if it's a unit...
                 {
-                    //...instntiate a plain tile under it first
-                    tileGO = Instantiate(LoadPrefabFromFile('-'), new Vector3(x, y, 0), Quaternion.identity);
+                    //...instantiate a plain tile under it first
+                    tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.identity);
                     ct = tileGO.GetComponent<ClickableTile>();
+                    ct.tileType = tileDict['-'].tileType;
+                    ct.isWalkable = tileDict['-'].isWalkable;
+                    ct.movementCost = tileDict['-'].movementCost;
+
+                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites['-'];
+
                     ct.tileX = x;
                     ct.tileY = y;
                     ct.map = this;
                     clickableTiles[x, y] = ct;
 
 
-                    GameObject unitGO = Instantiate(LoadPrefabFromFile(letter), new Vector3(x, y, 0), Quaternion.identity);
+                    GameObject unitGO = Instantiate(unitPrefab, new Vector3(x, y, 0), Quaternion.identity);
                     Unit un = unitGO.GetComponent<Unit>();
                     un.tileX = x;
                     un.tileY = y;
@@ -125,9 +161,8 @@ public class TileMap : MonoBehaviour
                     ct.tileType = tileDict[letter].tileType;
                     ct.isWalkable = tileDict[letter].isWalkable;
                     ct.movementCost = tileDict[letter].movementCost;
-                    
-                    tileGO.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(tileDict[letter].sprite);
 
+                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter];
 
                     ct.tileX = x;
                     ct.tileY = y;
@@ -139,7 +174,7 @@ public class TileMap : MonoBehaviour
         }
     }
 
-    public void Dijkstra(Unit selectedUnit)
+    public void Dijkstra(Unit selectedUnit, bool isMoving)
     {
         //Dijkstra's Algorithm for shortest path
         //dist relates each node to it's distance to source
@@ -187,7 +222,7 @@ public class TileMap : MonoBehaviour
 
             foreach (Node v in u.edges) // for all of u's neighbours...
             {
-                if (UnitCanEnterTile(v))
+                if (UnitCanEnterTile(v, isMoving))
                 {
                     float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
                     if (cost < dist[v])
@@ -208,6 +243,7 @@ public class TileMap : MonoBehaviour
         //Dictionary<Node, float> dist = dijkstra.Item1;
         //prev holds the steps for the shortest path to source
         //Dictionary<Node, Node> prev = dijkstra.Item2;
+        Dijkstra(selectedUnit, true);
 
         foreach (Node n in dist.Keys)
         {
@@ -241,6 +277,7 @@ public class TileMap : MonoBehaviour
         //Dictionary<Node, float> dist = dijkstra.Item1;
         //prev holds the steps for the shortest path to source
         //Dictionary<Node, Node> prev = dijkstra.Item2;
+        Dijkstra(selectedUnit, false);
 
         foreach (Node n in dist.Keys)
         {
@@ -293,7 +330,7 @@ public class TileMap : MonoBehaviour
         selectedUnit.ResetTurnValues();
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
 
-        Dijkstra(selectedUnit);
+        Dijkstra(selectedUnit, true);
         OpenActionMenu();
 
         turnQueue.RemoveAt(0);
@@ -362,36 +399,25 @@ public class TileMap : MonoBehaviour
         }
     }
 
-    GameObject LoadPrefabFromFile(char firstLetter)
-    {
-        foreach (string filename in Directory.GetFiles("Assets/Resources"))
-        {
-            string fn = filename[17..(filename.Length-7)];
-            if (fn[0] == firstLetter)
-            {
-                GameObject loadedObject = Resources.Load(fn) as GameObject;
-                if (loadedObject == null)
-                {
-                    throw new FileNotFoundException("...no file found at " + fn);
-                }
-                return loadedObject;
-            }
-            
-        }
-                
-        return null;
-    }   
-
     public Vector3 TileCoordToWorldCoord(int x, int y)
     {
         //if the map ever slides or scales, this will need to be more complicated
         return new Vector3(x, y, 0);
     }
 
-    bool UnitCanEnterTile(Node n)
+    bool UnitCanEnterTile(Node n, bool isMoving)
     {
-        return selectedUnit.movementType == Unit.MovementType.walking && clickableTiles[n.x, n.y].isWalkable
-                    || selectedUnit.movementType == Unit.MovementType.flying;
+        if (isMoving
+            && clickableTiles[n.x, n.y].occupyingUnit != null
+            && clickableTiles[n.x, n.y].occupyingUnit.GetType() == typeof(Enemy))
+            return false;
+        if (selectedUnit.movementType == Unit.MovementType.walking && clickableTiles[n.x, n.y].isWalkable)
+            return true;
+        if (selectedUnit.movementType == Unit.MovementType.flying)
+            return true;
+        
+        return false;
+            
     }
 
     public void GeneratePathTo(int targetX, int targetY, bool withinMovementSet)
@@ -445,13 +471,11 @@ public class TileMap : MonoBehaviour
 
     public void NewToolTip(ClickableTile tile)
     {
-        //tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
-        tooltip.LoadTile(tile, tile.costToFinishHere, selectedUnit);
+        tooltip.LoadTile(tile, (int)dist[graph[tile.tileX, tile.tileY]], selectedUnit);
     }
 
     public void OpenActionMenu()
     {
-
         foreach (Node n in dist.Keys)
         {
             clickableTiles[n.x, n.y].RemoveFromAllSets();
