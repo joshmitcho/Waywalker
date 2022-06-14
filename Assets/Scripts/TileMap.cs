@@ -140,6 +140,7 @@ public class TileMap : MonoBehaviour
                     ct.map = this;
                     clickableTiles[x, y] = ct;
 
+                    
 
                     GameObject unitGO = Instantiate(unitPrefab, new Vector3(x, y, 0), Quaternion.identity);
                     Unit un = unitGO.GetComponent<Unit>();
@@ -162,6 +163,8 @@ public class TileMap : MonoBehaviour
                     ct.movementCost = tileDict[letter].movementCost;
 
                     tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter];
+
+
 
                     ct.tileX = x;
                     ct.tileY = y;

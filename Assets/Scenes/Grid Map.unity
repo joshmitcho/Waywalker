@@ -1363,8 +1363,6 @@ MonoBehaviour:
   tileIcon: {fileID: 895678202}
   terrainCost: {fileID: 589675650}
   distanceToActiveUnit: {fileID: 297579036}
-  HP: {fileID: 1111374481}
-  AC: {fileID: 624075863}
   shadeFull: {fileID: 21300000, guid: 30e744795edc5a749ba45bb75e780daf, type: 3}
   shadeHalf: {fileID: 21300000, guid: 48edd827b0b800f428c504758f7913d7, type: 3}
   frameFull: {fileID: 21300000, guid: 445f682b75b776b4e8fd0ef655af9376, type: 3}
@@ -1373,6 +1371,8 @@ MonoBehaviour:
   unitTooltip: {fileID: 469771107}
   unitName: {fileID: 857564777}
   unitIcon: {fileID: 1598108256}
+  HP: {fileID: 1111374481}
+  AC: {fileID: 624075863}
 --- !u!114 &705657030
 MonoBehaviour:
   m_ObjectHideFlags: 0
