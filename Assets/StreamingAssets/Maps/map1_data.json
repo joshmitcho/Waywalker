@@ -1,28 +1,40 @@
 {
 	"Items": [
 		{
-			"key": "-",
+			"letter": "-",
 			"tileType": "Plain",
 			"isWalkable": true,
 			"movementCost": 5,
-			"sprite": "plain.png",
+			"spritesheet": "plain.png",
+			"numSprites": 1,
 			"rotation": 0
         },
         {
-			"key": "W",
+			"letter": "W",
             "tileType": "Water",
 			"isWalkable": true,
 			"movementCost": 20,
-			"sprite": "water.png",
+			"spritesheet": "water.png",
+			"numSprites": 8,
 			"rotation": 0
         },
 		{
-			"key": "M",
+			"letter": "M",
             "tileType": "Mntn.",
 			"isWalkable": false,
 			"movementCost": 5,
-			"sprite": "mountain.png",
+			"spritesheet": "mountain.png",
+			"numSprites": 1,
 			"rotation": 0
+        },
+		{
+			"letter": "S",
+            "tileType": "Shork",
+			"isWalkable": false,
+			"movementCost": 5,
+			"spritesheet": "shork.png",
+			"numSprites": 2,
+			"rotation": 90
         }
 	]
 }

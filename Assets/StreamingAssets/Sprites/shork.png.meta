@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a8d138f58e52d684bb3159eb8b500840
+guid: 4d3855fa9ff7ada409e73bd02bf4c6fe
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: water_0
+      name: shork_0
       rect:
         serializedVersion: 2
         x: 0
@@ -130,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a81feb325cf6a704c89ea183926fc3d9
-      internalID: -484864382
+      spriteID: d23628c9930d09e409f5273d52334c42
+      internalID: -1057875963
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: water_1
+      name: shork_1
       rect:
         serializedVersion: 2
         x: 32
@@ -151,134 +151,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c3bcf5a3b981a5247b31be03faa3935b
-      internalID: 115560515
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_2
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 356973d8643aef2448a3e5918ba486ee
-      internalID: -121817379
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_3
-      rect:
-        serializedVersion: 2
-        x: 96
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6d9fbe98bb2aa5645be6fdfca2858e6e
-      internalID: 1584627502
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_4
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cf7b9c73ab8ed2046afd59fb76dda539
-      internalID: 1948131615
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_5
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9e2ad89e69614f548832dbb3baa2c109
-      internalID: 1183519752
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_6
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 698ff49ffafa47b419e5fb0c1ee630cf
-      internalID: 205470109
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: water_7
-      rect:
-        serializedVersion: 2
-        x: 224
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: be99f2131bd24394db9a5992fe50ca65
-      internalID: -1445852208
+      spriteID: 0122dc0dce4cbc74dad80abbac73fd02
+      internalID: 188825703
       vertices: []
       indices: 
       edges: []
@@ -294,14 +168,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      water_1: 115560515
-      water_5: 1183519752
-      water_3: 1584627502
-      water_4: 1948131615
-      water_0: -484864382
-      water_6: 205470109
-      water_7: -1445852208
-      water_2: -121817379
+      shork_1: 188825703
+      shork_0: -1057875963
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

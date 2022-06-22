@@ -131,10 +131,11 @@ public class ClickableTile : MonoBehaviour
 [Serializable]
 public class Tile
 {
-    public string key;
+    public string letter;
     public string tileType;
     public bool isWalkable;
     public int movementCost;
-    public string sprite;
+    public string spritesheet;
+    public int numSprites;
     public int rotation;
 }
