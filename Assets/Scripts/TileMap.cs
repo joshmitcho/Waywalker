@@ -27,7 +27,7 @@ public class TileMap : MonoBehaviour
 
     List<Unit> turnQueue;
 
-    int[,] units;
+    //int[,] units;
     Node[,] graph;
     Dictionary<Node, float> dist;
     Dictionary<Node, Node> prev;
@@ -42,8 +42,6 @@ public class TileMap : MonoBehaviour
     int mapSizeX;
     int mapSizeY;
 
-    //[SerializeField]
-    //AnimatorOverrideController ride;
     [SerializeField]
     AnimationClip clip;
 
@@ -125,7 +123,7 @@ public class TileMap : MonoBehaviour
         arrow.GenerateArrowSegments(mapSizeX, mapSizeY);
 
         //Allocate our map tiles and unit spots
-        units = new int[mapSizeX, mapSizeY];
+        //units = new int[mapSizeX, mapSizeY];
         clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
 
         int x, y;
@@ -183,11 +181,14 @@ public class TileMap : MonoBehaviour
                     ct.movementCost = tileDict[letter].movementCost;
 
                     Animator anim = tileGO.GetComponent<Animator>();
-                    if (letter == 'W') // If tile has a sprite animation
+                    if (sprites[letter].Count > 1) // If tile has a sprite animation
                     {
-                        AnimatorOverrideController ride = new AnimatorOverrideController(anim.runtimeAnimatorController);
-                        ride["clip"] = CreateAnimationClip(sprites[letter]);
-                    } else // if the tile is just a static sprite
+                        //AnimatorOverrideController ride = new AnimatorOverrideController(anim.runtimeAnimatorController);
+                        //ride["clip"] = CreateAnimationClip(sprites[letter]);
+                        tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
+
+                    }
+                    else // if the tile is just a static sprite
                     {
                         anim.runtimeAnimatorController = null;
                         tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
