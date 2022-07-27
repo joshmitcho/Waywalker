@@ -26,15 +26,6 @@
 			"spritesheet": "mountain.png",
 			"numSprites": 1,
 			"rotation": 0
-        },
-		{
-			"letter": "K",
-            "tileType": "Kelly",
-			"isWalkable": false,
-			"movementCost": 5,
-			"spritesheet": "kelly.png",
-			"numSprites": 8,
-			"rotation": 0
         }
 	]
 }

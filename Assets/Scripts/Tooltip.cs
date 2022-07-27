@@ -97,7 +97,7 @@ public class Tooltip : MonoBehaviour
             distanceToActiveUnit.color = Color.white;
 
         if (dist > 1000 || dist < 0)
-            distanceToActiveUnit.text = "inf";
+            distanceToActiveUnit.text = "X";
         else
             distanceToActiveUnit.text = dist.ToString();
 

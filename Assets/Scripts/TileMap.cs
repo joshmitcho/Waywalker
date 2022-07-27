@@ -44,6 +44,8 @@ public class TileMap : MonoBehaviour
 
     [SerializeField]
     AnimationClip clip;
+    [SerializeField]
+    AnimatorOverrideController ride;
 
     private void Start()
     {
@@ -70,7 +72,7 @@ public class TileMap : MonoBehaviour
                 byte[] bytes = File.ReadAllBytes(path);
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
-                print(tileDict[key].spritesheet + ": " + texture.width + " x " + texture.height);
+                //print(tileDict[key].spritesheet + ": " + texture.width + " x " + texture.height);
                                 
                 List<Sprite> lst = new List<Sprite>();
 
@@ -184,7 +186,7 @@ public class TileMap : MonoBehaviour
                     if (sprites[letter].Count > 1) // If tile has a sprite animation
                     {
                         //AnimatorOverrideController ride = new AnimatorOverrideController(anim.runtimeAnimatorController);
-                        //ride["clip"] = CreateAnimationClip(sprites[letter]);
+                        ride["clip"] = CreateAnimationClip(sprites[letter]);
                         tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
 
                     }
@@ -207,6 +209,7 @@ public class TileMap : MonoBehaviour
     AnimationClip CreateAnimationClip(List<Sprite> sprites)
     {
         AnimationClip animClip = clip;
+
         animClip.frameRate = sprites.Count;
         animClip.wrapMode = WrapMode.Default;
 
