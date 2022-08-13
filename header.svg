@@ -5,7 +5,7 @@
 				
 			</style>
 			<div class="container">
-				<img width="640px" height="320px" src="logo_shine.gif"></img>
+				<img width="640" height="320" xlink:href="logo_shine.gif"></img>
 			</div>
 		</div>
 	</foreignObject>
