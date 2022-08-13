@@ -1,0 +1,52 @@
+{
+	"Items": [
+		{
+			"name": "Shork",
+			"team": "PC",
+			"alignment": "Chaotic Good",
+			"class": "Barbarian",
+			"race": "Half-Orc",
+			"AC": 17,
+			"HP": 30,
+			"walkingSpeed": 30,
+			"swimmingSpeed": 20,
+			"STR": 21,
+			"DEX": 9,
+			"CON": 15,
+			"INT": 18,
+			"WIS": 15,
+			"CHA": 18,
+			"savingThrows": "CON +6, INT +8, WIS +6",
+			"skills": "History +12, Perception +10",
+			"senses": "Darkvision 120 ft.,  Passive Perception 20",
+			"languages": "Deep Speech, Telepathy 120 ft.",
+			"traits": "Amphibious. Shork can breathe air and water.",
+			"spritesheet": "shork.png",
+			"numSprites": 2
+		},
+		{
+			"name": "Kelly",
+			"team": "PC",
+			"alignment": "Neutral Evil",
+			"class": "Fighter",
+			"race": "Skeleton",
+			"AC": 12,
+			"HP": 10,
+			"walkingSpeed": 20,
+			"swimmingSpeed": 20,
+			"STR": 15,
+			"DEX": 9,
+			"CON": 10,
+			"INT": 8,
+			"WIS": 5,
+			"CHA": 8,
+			"savingThrows": "CON +6, INT +8, WIS +6",
+			"skills": "History +12, Perception +10",
+			"senses": "Darkvision 120 ft.,  Passive Perception 20",
+			"languages": "Deep Speech, Telepathy 120 ft.",
+			"traits": "Amphibious. Shork can breathe air and water.",
+			"spritesheet": "kelly.png",
+			"numSprites": 8
+		}
+	]
+}

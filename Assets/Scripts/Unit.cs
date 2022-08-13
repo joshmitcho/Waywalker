@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,11 +18,18 @@ public class Unit : MonoBehaviour
     public int movementSpeed = 30;
     public int currentMovement;
 
-    public int HP = 30;
+    public int HP;
     public int currentHP;
 
-    public int AC = 18;
+    public int AC;
     public int currentAC;
+
+    public int STR;
+    public int DEX;
+    public int CON;
+    public int INT;
+    public int WIS;
+    public int CHA;
 
     public Weapon mainHand;
     public int numAttackActions = 1;
@@ -41,9 +49,16 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        ResetTurnValues();
+        InitiateUnitValues();
         mainHand = new Weapon("Greataxe", "Two-handed Axe", new Attack(5, new Dice(1, 20, 0), new Dice(3, 12, 2)));
+        
+    }
 
+    public void InitiateUnitValues()
+    {
+        currentAC = AC;
+        currentHP = HP;
+        ResetTurnValues();
     }
 
     public int GetModifier(int score)
@@ -141,4 +156,29 @@ public class Unit : MonoBehaviour
         }
     }
 
+}
+
+[Serializable]
+public class UnitSpec
+{
+    public string name;
+    public string team;
+    public string alignment;
+    public int AC;
+    public int HP;
+    public int walkingSpeed;
+    public int swimmingSpeed;
+    public int STR;
+    public int DEX;
+    public int CON;
+    public int INT;
+    public int WIS;
+    public int CHA;
+    public string savingThrows;
+    public string skills;
+    public string senses;
+    public string languages;
+    public string traits;
+    public string spritesheet;
+    public int numSprites;
 }

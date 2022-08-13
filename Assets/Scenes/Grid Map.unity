@@ -686,8 +686,6 @@ MonoBehaviour:
   diceHandler: {fileID: 985011522}
   tilePrefab: {fileID: 7524592953109944505, guid: 4e2ba7ca2fd05cd45a73a100fb5f426a, type: 3}
   unitPrefab: {fileID: 1760550636029850392, guid: 8d5f5ea8f7f99ae448ad596be3695ea1, type: 3}
-  clip: {fileID: 7400000, guid: 45f6fa1ae55f42547bb994bf5bbe7ff8, type: 2}
-  ride: {fileID: 22100000, guid: 4d409f28fdf88a84ea337d8ccf69ff71, type: 2}
 --- !u!114 &346171137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1587,7 +1585,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Shork
+  m_text: Unit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 95d18a134e2e7984ba2e712e5092ba53, type: 2}
   m_sharedMaterial: {fileID: 7640777921283396475, guid: 95d18a134e2e7984ba2e712e5092ba53, type: 2}
@@ -2169,7 +2167,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Plain
+  m_text: Tile
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 95d18a134e2e7984ba2e712e5092ba53, type: 2}
   m_sharedMaterial: {fileID: 7640777921283396475, guid: 95d18a134e2e7984ba2e712e5092ba53, type: 2}

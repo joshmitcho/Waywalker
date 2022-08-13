@@ -1,0 +1,10 @@
+-----
+--1--
+--0--
+-----
+-----
+//INSTRUCTIONS
+//the party orientation can be customized within a 5x5 grid.
+//dashes are empty spaces, numbers are party members.
+//it must be a complete 5x5 grid or it will not work. don't forget the dashes!
+//computers and programmers count from zero, so 0 is the first party member in party.json, 1 is the second, etc.

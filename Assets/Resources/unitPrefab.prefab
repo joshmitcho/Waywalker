@@ -74,7 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 765852733251931092}
   - component: {fileID: 6997659009850604365}
-  - component: {fileID: 4756846514419345854}
+  - component: {fileID: 3877607143780151230}
   m_Layer: 0
   m_Name: Unit Sprite
   m_TagString: Untagged
@@ -149,23 +149,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &4756846514419345854
-Animator:
-  serializedVersion: 4
+--- !u!114 &3877607143780151230
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4159578700964409338}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3eaea8740e177e94486143965eae6b30, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b731db8665c1c8541a9f38800094e58a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rend: {fileID: 6997659009850604365}
+  sprites: []
+  fps: 0
+  hasMultipleFrames: 0

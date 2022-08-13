@@ -42,11 +42,6 @@ public class TileMap : MonoBehaviour
     int mapSizeX;
     int mapSizeY;
 
-    [SerializeField]
-    AnimationClip clip;
-    [SerializeField]
-    AnimatorOverrideController ride;
-
     private void Start()
     {
         
@@ -59,7 +54,7 @@ public class TileMap : MonoBehaviour
         NextTurn();
     }
 
-    private Dictionary<char, List<Sprite>> LoadTileSprites(Dictionary<char, Tile> tileDict)
+    private Dictionary<char, List<Sprite>> LoadTileSprites(Dictionary<char, TileSpec> tileDict)
     {
         Dictionary<char, List<Sprite>> sprites = new Dictionary<char, List<Sprite>>();
 
@@ -72,7 +67,6 @@ public class TileMap : MonoBehaviour
                 byte[] bytes = File.ReadAllBytes(path);
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
-                //print(tileDict[key].spritesheet + ": " + texture.width + " x " + texture.height);
                                 
                 List<Sprite> lst = new List<Sprite>();
 
@@ -96,13 +90,49 @@ public class TileMap : MonoBehaviour
 
     }
 
+    private Dictionary<int, List<Sprite>> LoadPartySprites(UnitSpec[] units)
+    {
+        Dictionary<int, List<Sprite>> sprites = new Dictionary<int, List<Sprite>>();
+
+        for (int i = 0; i < units.Length; i++)
+        {
+            string path = Application.streamingAssetsPath + "/Sprites/" + units[i].spritesheet;
+
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                Texture2D texture = new Texture2D(1, 1);
+                texture.LoadImage(bytes);
+
+                List<Sprite> lst = new List<Sprite>();
+
+                for (int j = 0; j < units[i].numSprites; j++)
+                {
+                    Sprite sp = Sprite.Create(texture, new Rect(j * 32, 0, 32, 32),
+                        new Vector2(0.5f, 0.5f), 32f, 0, SpriteMeshType.FullRect);
+                    lst.Add(sp);
+                }
+
+                sprites.Add(i, lst);
+
+            }
+            else
+            {
+                print("No file at: " + path);
+            }
+        }
+
+        return sprites;
+
+    }
+
     void GenerateMapTiles(string filename)
     {
         string path = Application.streamingAssetsPath + "/Maps/" + filename;
 
         string tileJSON = File.ReadAllText(path + "_data.json");
-        Dictionary<char, Tile> tileDict = new Dictionary<char, Tile>();
-        foreach (Tile t in JsonHelper.FromJson<Tile>(tileJSON))
+        Dictionary<char, TileSpec> tileDict = new Dictionary<char, TileSpec>();
+        foreach (TileSpec t in JsonHelper.FromJson<TileSpec>(tileJSON))
         {
             tileDict[t.letter[0]] = t;
         }
@@ -128,11 +158,12 @@ public class TileMap : MonoBehaviour
         //units = new int[mapSizeX, mapSizeY];
         clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
 
-        int x, y;
+        //values to store where the party begins (X on the map)
+        int partyX = 0, partyY = 0;
 
-        for (x = 0; x < mapSizeX; x++)
+        for (int x = 0; x < mapSizeX; x++)
         {
-            for (y = 0; y < mapSizeY; y++)
+            for (int y = 0; y < mapSizeY; y++)
             {
                 //spawn visual prefabs for tiles
 
@@ -141,92 +172,102 @@ public class TileMap : MonoBehaviour
                 GameObject tileGO;
                 ClickableTile ct;
 
-                if (letter == 'X' || letter == 'V') //if it's a unit...
+                if (letter == 'X') //if it's where the party starts...
                 {
-                    //...instantiate a plain tile under it first
-                    tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-                    ct = tileGO.GetComponent<ClickableTile>();
-                    Animator anim = tileGO.GetComponent<Animator>();
-                    anim.runtimeAnimatorController = null;
+                    letter = '-'; //instantiate a plain tile for now
 
-                    ct.tileType = tileDict['-'].tileType;
-                    ct.isWalkable = tileDict['-'].isWalkable;
-                    ct.movementCost = tileDict['-'].movementCost;
-
-                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites['-'][0];
-
-                    ct.tileX = x;
-                    ct.tileY = y;
-                    ct.map = this;
-                    clickableTiles[x, y] = ct;
-
-                    
-
-                    GameObject unitGO = Instantiate(unitPrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-                    Unit un = unitGO.GetComponent<Unit>();
-                    un.tileX = x;
-                    un.tileY = y;
-                    un.map = this;
-                    activeUnits.Add(un);
-                    clickableTiles[x, y].occupyingUnit = un;
-                    un.occupyingTile = clickableTiles[x, y];
-
+                    //remember where the party started, for later
+                    partyX = x;
+                    partyY = y;
                 }
-                else
+
+                tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    
+                ct = tileGO.GetComponent<ClickableTile>();
+                ct.tileType = tileDict[letter].tileType;
+                ct.isWalkable = tileDict[letter].isWalkable;
+                ct.movementCost = tileDict[letter].movementCost;
+
+                if (sprites[letter].Count > 1) // If tile has a sprite animation
                 {
-
-                    tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-                    
-                    ct = tileGO.GetComponent<ClickableTile>();
-                    ct.tileType = tileDict[letter].tileType;
-                    ct.isWalkable = tileDict[letter].isWalkable;
-                    ct.movementCost = tileDict[letter].movementCost;
-
-                    Animator anim = tileGO.GetComponent<Animator>();
-                    if (sprites[letter].Count > 1) // If tile has a sprite animation
-                    {
-                        //AnimatorOverrideController ride = new AnimatorOverrideController(anim.runtimeAnimatorController);
-                        ride["clip"] = CreateAnimationClip(sprites[letter]);
-                        tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
-
-                    }
-                    else // if the tile is just a static sprite
-                    {
-                        anim.runtimeAnimatorController = null;
-                        tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
-                    }
-
-                    ct.tileX = x;
-                    ct.tileY = y;
-                    ct.map = this;
-                    clickableTiles[x, y] = ct;
-                    
+                    tileGO.GetComponent<SpriteAnimator>().loadSprites(sprites[letter]);
                 }
+                else // if the tile is just a static sprite
+                {
+                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
+                }
+
+                ct.tileX = x;
+                ct.tileY = y;
+                ct.map = this;
+                clickableTiles[x, y] = ct;
+                    
+                
             }
         }
+        //instatiate party units
+        LoadParty(partyX, partyY);
     }
 
-    AnimationClip CreateAnimationClip(List<Sprite> sprites)
+    void LoadParty(int partyX, int partyY)
     {
-        AnimationClip animClip = clip;
+        Dictionary<int, Tuple<int, int>> pcLocations = new Dictionary<int, Tuple<int, int>>();
+        string[] orientationText = File.ReadAllLines(Application.streamingAssetsPath + "/Characters/Party/orientation.txt");
 
-        animClip.frameRate = sprites.Count;
-        animClip.wrapMode = WrapMode.Default;
-
-        EditorCurveBinding spriteBinding = new EditorCurveBinding();
-        spriteBinding.type = typeof(SpriteRenderer);
-        spriteBinding.path = "";
-        spriteBinding.propertyName = "m_Sprite";
-        ObjectReferenceKeyframe[] spriteKeyFrames = new ObjectReferenceKeyframe[sprites.Count];
-        for (int i = 0; i < (sprites.Count); i++)
+        for (int y = 0; y < 5; y++)
         {
-            //spriteKeyFrames[i] = new ObjectReferenceKeyframe();
-            spriteKeyFrames[i].time = i / (sprites.Count * 1.0f);
-            spriteKeyFrames[i].value = sprites[i];
-        }
-        AnimationUtility.SetObjectReferenceCurve(animClip, spriteBinding, spriteKeyFrames);
+            for (int x = 0; x < 5; x++)
+            {
+                if (orientationText[y][x] != '-')
+                {
+                    pcLocations[(int)Char.GetNumericValue(orientationText[y][x])] = new Tuple<int, int>(x, y);
+                }
+            }
+        }        
 
-        return animClip;
+        string partyJSON = File.ReadAllText(Application.streamingAssetsPath + "/Characters/Party/party.json");
+        UnitSpec[] units = JsonHelper.FromJson<UnitSpec>(partyJSON);
+
+        Dictionary<int, List<Sprite>> sprites = LoadPartySprites(units);
+
+        for (int i = 0; i < units.Length; i++)
+        {
+            int x = partyX + pcLocations[i].Item1 - 2;
+            int y = partyY - pcLocations[i].Item2 + 2;
+
+            GameObject unitGO = Instantiate(unitPrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+            Unit un = unitGO.GetComponent<Unit>();
+
+            un.name = units[i].name;
+            un.unitName = units[i].name;
+            un.AC = units[i].AC;
+            un.HP = units[i].HP;
+            un.STR = units[i].STR;
+            un.DEX = units[i].DEX;
+            un.CON = units[i].CON;
+            un.INT = units[i].INT;
+            un.WIS = units[i].WIS;
+            un.CHA = units[i].CHA;
+            un.movementSpeed = units[i].walkingSpeed;
+
+            un.tileX = x;
+            un.tileY = y;
+            un.map = this;
+            activeUnits.Add(un);
+            clickableTiles[x, y].occupyingUnit = un;
+            un.occupyingTile = clickableTiles[x, y];
+
+            un.InitiateUnitValues();
+
+            if (sprites[i].Count > 1) // If unit has a sprite animation
+            {
+                unitGO.GetComponentsInChildren<SpriteAnimator>()[0].loadSprites(sprites[i]);
+            }
+            else // if the unit is just a static sprite
+            {
+                unitGO.GetComponentsInChildren<SpriteRenderer>()[0].sprite = sprites[i][0];
+            }
+        }
     }
 
     public void Dijkstra(Unit selectedUnit, bool isMoving)

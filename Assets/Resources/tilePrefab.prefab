@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7524592953109944504}
   - component: {fileID: 5981862478706631395}
   - component: {fileID: 5300333126009273763}
-  - component: {fileID: 2036940554166450851}
+  - component: {fileID: 2167586811821574932}
   m_Layer: 0
   m_Name: tilePrefab
   m_TagString: Untagged
@@ -134,26 +134,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!95 &2036940554166450851
-Animator:
-  serializedVersion: 4
+--- !u!114 &2167586811821574932
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7524592953109944505}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: aa7312bdc27ebac4c86a30294695c31a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b731db8665c1c8541a9f38800094e58a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rend: {fileID: 7524592953109944504}
+  sprites: []
+  fps: 0
+  hasMultipleFrames: 0
 --- !u!1001 &958667544041401768
 PrefabInstance:
   m_ObjectHideFlags: 0
