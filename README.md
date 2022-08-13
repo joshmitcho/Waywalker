@@ -1,8 +1,8 @@
-<p align="center">
-  <img width="640" height="320" src="logo_shine.gif">
+<p>
+  <img width="320" height="160" src="logo_shine.gif">
 </p>
 
-<img src="header.svg" width="640" height="320">
+<img src="header.svg" width="320" height="160">
 
 
 # Waywalker
