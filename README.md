@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="640" height="320" src="logo_shine.gif">
+  <img width="960" height="480" src="logo_shine.gif">
 </p>
 
 # Waywalker
