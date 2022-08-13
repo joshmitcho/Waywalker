@@ -1,4 +1,4 @@
-<p align="center">
+<p>
   <img width="320" height="160" src="logo_shine.gif">
 </p>
 
