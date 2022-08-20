@@ -14,7 +14,7 @@ public class SpriteAnimator : MonoBehaviour
     int current = 0;
     float timeLapsed;
 
-    public void loadSprites(List<Sprite> sp)
+    public void LoadSprites(List<Sprite> sp)
     {
         hasMultipleFrames = true;
         fps = sp.Count;

@@ -190,7 +190,7 @@ public class TileMap : MonoBehaviour
 
                 if (sprites[letter].Count > 1) // If tile has a sprite animation
                 {
-                    tileGO.GetComponent<SpriteAnimator>().loadSprites(sprites[letter]);
+                    tileGO.GetComponent<SpriteAnimator>().LoadSprites(sprites[letter]);
                 }
                 else // if the tile is just a static sprite
                 {
@@ -261,7 +261,7 @@ public class TileMap : MonoBehaviour
 
             if (sprites[i].Count > 1) // If unit has a sprite animation
             {
-                unitGO.GetComponentsInChildren<SpriteAnimator>()[0].loadSprites(sprites[i]);
+                unitGO.GetComponentsInChildren<SpriteAnimator>()[0].LoadSprites(sprites[i]);
             }
             else // if the unit is just a static sprite
             {
