@@ -1,4 +1,4 @@
-Shader "Unlit/shader1" {
+Shader "Unlit/shader2" {
     Properties{ //input data
         _ColourA("Colour A", Color) = (1, 1, 1, 1)
         _ColourB("Colour B", Color) = (1, 1, 1, 1)
@@ -100,17 +100,20 @@ Shader "Unlit/shader1" {
 
                 //float t = abs(frac(i.uv.x * 5) * 2 - 1);
 
+                float2 uvsCentered = i.uv * 2 - 1;
+                float radialDistance = saturate(length(uvsCentered));
+                
                 const float xOffset = cos(i.uv.x * TAU * 5) * 0.01f; //wiggle wiggle
                 
-                float t = cos((i.uv.y + xOffset - _Time.y * 0.1f) * TAU * 5)*0.5 + 0.5; //stripes
+                float t = cos((radialDistance + xOffset - _Time.y * 0.1f) * TAU * 5)*0.5 + 0.5; //stripes
 
-                t *= 1 - i.uv.y; //fade out at the top
+                t *= 1 - radialDistance; //fade out at the top
                 
                 //frac(n) = n - floor(n)
                 //t = frac(t); can be used to output a repeating pattern between 0 and 1.
                 //This can also help troubleshoot if an issue is occuring because of values outside [0,1]
                 
-                float4 gradient = lerp(_ColourA, _ColourB, i.uv.y);
+                float4 gradient = lerp(_ColourA, _ColourB, radialDistance);
                 
                 return t * gradient;
             }

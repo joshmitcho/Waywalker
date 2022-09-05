@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
@@ -5,7 +6,7 @@ public class Fps : MonoBehaviour
 {
 
 	string label = "";
-	float count;
+	private float count;
 
 	IEnumerator Start()
 	{

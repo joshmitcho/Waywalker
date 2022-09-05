@@ -46,7 +46,7 @@ public class TileMap : MonoBehaviour
     {
         
         buttons = actionMenu.gameObject.GetComponentsInChildren<Button>();
-        diceHandler.GenerateDieBlanks(6);
+        diceHandler.GenerateDieBlanks(18);
         GenerateMapTiles("map1");
         GeneratePathfindingGraph();
         RollInitiative();
@@ -397,7 +397,7 @@ public class TileMap : MonoBehaviour
         Dice init = new Dice(1, 20, 0);
         foreach (Unit un in activeUnits)
         {
-            un.initiative = init.Roll()[0] + un.initiativeBonus; //Roll()[0] is always the total roll value
+            un.initiative = init.Roll().Item2[0] + un.initiativeBonus; //Roll()[0] is always the total roll value
         }
 
         activeUnits.Sort((p, q) => q.initiative.CompareTo(p.initiative));

@@ -50,7 +50,7 @@ public class Unit : MonoBehaviour
     private void Awake()
     {
         InitiateUnitValues();
-        mainHand = new Weapon("Greataxe", "Two-handed Axe", new Attack(5, new Dice(1, 20, 0), new Dice(3, 12, 2)));
+        mainHand = new Weapon("Greataxe", "Two-handed Axe", new Attack(5, new Dice(1, 20, 0), new Dice(2, 6, -1)));
         
     }
 
@@ -76,11 +76,11 @@ public class Unit : MonoBehaviour
         return mainHand.primaryAttack.range;
     }
 
-    public int[] Attack()
+    public Tuple<int, int[]> Attack()
     {
-        int[] rolls = mainHand.primaryAttack.damageDice.Roll();
+        Tuple<int, int[]> rolls = mainHand.primaryAttack.damageDice.Roll();
 
-        print("Attack: " + mainHand + ", " + rolls[0]);
+        print("Attack: " + mainHand + ", " + rolls.Item2[0]);
         remainingAttackActions--;
 
         return rolls;

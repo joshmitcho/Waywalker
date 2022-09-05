@@ -1,6 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Dice
 {
@@ -13,7 +14,7 @@ public class Dice
         values[2] = z;
     }
 
-    public int[] Roll() //[0] is the total result, [1]..[n] is the individual dice values, last is the modifier
+    public Tuple<int, int[]> Roll() //[0] is the total result, [1]..[n] is the individual dice values, last is the modifier
     {
         int[] rolls = new int[values[0] + 2]; //first is the total result, last is the modifier
         int rollTotal = 0;
@@ -31,7 +32,7 @@ public class Dice
         rolls[0] = rollTotal; //first is the total result
         rolls[values[0]+1] = values[2]; //last is the modifier
 
-        return rolls;
+        return Tuple.Create(values[1], rolls);
     }
 
     public override string ToString()
