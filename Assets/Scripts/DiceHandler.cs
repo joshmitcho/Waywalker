@@ -67,7 +67,7 @@ public class DiceHandler : MonoBehaviour
         
         int[] values = diceData.Item2;
         
-        Vector3 anchor = map.cam.WorldToScreenPoint(unit.transform.position) + new Vector3(0, 32, 0);
+        Vector3 anchor = map.cam.WorldToScreenPoint(unit.transform.position) + new Vector3(0, -32, 0);
 
         //clear all dice first
         foreach (GameObject die in dice)
@@ -83,7 +83,7 @@ public class DiceHandler : MonoBehaviour
             dice[i].GetComponent<Image>().color = unit.diceColour;
             dice[i].GetComponentInChildren<TextMeshProUGUI>().color = unit.numColour;
 
-            dice[i].transform.position = anchor + new Vector3(i*64, 0, 0);
+            dice[i].transform.position = anchor + new Vector3(i*80, 0, 0);
             dice[i].GetComponentInChildren<TextMeshProUGUI>().text = values[i].ToString();
         }
 
@@ -104,7 +104,7 @@ public class DiceHandler : MonoBehaviour
 
 
         //put the result in the correct position
-        dice[0].transform.position = anchor + new Vector3(0, 64, 0);
+        dice[0].transform.position = anchor + new Vector3(0, -64, 0);
         dice[0].GetComponent<Image>().sprite = (Sprite)sprites[0];
 
         map.state = TileMap.State.zero;
