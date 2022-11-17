@@ -46,10 +46,12 @@ public class ClickableTile : MonoBehaviour
             hoverHighlight.transform.localScale = scale + new Vector3(wave, wave, 0);
 
         }
+
     }
 
     private void OnMouseEnter()
     {
+
         HoverHighlightOn();
 
         if (map.state != TileMap.State.unitMoving)
@@ -75,6 +77,12 @@ public class ClickableTile : MonoBehaviour
         if (map.state != TileMap.State.unitMoving)
         {
             map.ClearCurrentPath();
+        }
+    }
+
+    public void OnMouseOver() {
+        if(Input.GetMouseButtonDown(1)){
+            map.EndSet();
         }
     }
 
@@ -124,6 +132,7 @@ public class ClickableTile : MonoBehaviour
         if (withinAttackSet && map.state == TileMap.State.choosingAttack && occupyingUnit != null)
         {
             map.Attack(occupyingUnit);
+            
         }
 
     }

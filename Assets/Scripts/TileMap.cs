@@ -270,7 +270,7 @@ public class TileMap : MonoBehaviour
         }
     }
 
-    public void Dijkstra(Unit selectedUnit, bool isMoving)
+    public void Dijkstra(Unit selectedUnit, bool isMoving, bool isAttack)
     {
         //Dijkstra's Algorithm for shortest path
         //dist relates each node to it's distance to source
@@ -320,7 +320,13 @@ public class TileMap : MonoBehaviour
             {
                 if (UnitCanEnterTile(v, isMoving))
                 {
-                    float cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
+                    float cost;
+                    if(isAttack){
+                        cost = dist[u] + 5;
+                    }
+                    else{
+                        cost = dist[u] + CostToEnterTile(u.x, u.y, v.x, v.y);
+                    }
                     if (cost < dist[v])
                     {
                         dist[v] = cost;
@@ -339,7 +345,7 @@ public class TileMap : MonoBehaviour
         //Dictionary<Node, float> dist = dijkstra.Item1;
         //prev holds the steps for the shortest path to source
         //Dictionary<Node, Node> prev = dijkstra.Item2;
-        Dijkstra(selectedUnit, true);
+        Dijkstra(selectedUnit, true, false);
 
         foreach (Node n in dist.Keys)
         {
@@ -373,7 +379,7 @@ public class TileMap : MonoBehaviour
         //Dictionary<Node, float> dist = dijkstra.Item1;
         //prev holds the steps for the shortest path to source
         //Dictionary<Node, Node> prev = dijkstra.Item2;
-        Dijkstra(selectedUnit, false);
+        Dijkstra(selectedUnit, false, true);
 
         foreach (Node n in dist.Keys)
         {
@@ -390,6 +396,15 @@ public class TileMap : MonoBehaviour
         state = State.choosingAttack;
         actionMenu.gameObject.SetActive(false);
 
+    }
+
+    public void EndSet(){
+        foreach (Node n in dist.Keys)
+        {
+            clickableTiles[n.x, n.y].RemoveFromAllSets();
+        }
+
+        actionMenu.gameObject.SetActive(true);
     }
 
     void RollInitiative()
@@ -426,7 +441,7 @@ public class TileMap : MonoBehaviour
         selectedUnit.ResetTurnValues();
         turnDisplay.text = selectedUnit.unitName + "'s Turn!";
 
-        Dijkstra(selectedUnit, true);
+        Dijkstra(selectedUnit, true, false);
         OpenActionMenu();
 
         turnQueue.RemoveAt(0);
@@ -604,7 +619,7 @@ public class TileMap : MonoBehaviour
         }
 
 
-        actionMenu.transform.position = cam.WorldToScreenPoint(selectedUnit.transform.position) + new Vector3(8, 8, 0);
+        //actionMenu.transform.position = cam.WorldToScreenPoint(selectedUnit.transform.position) + new Vector3(8, 8, 0);
 
         actionMenu.gameObject.SetActive(true);
     }

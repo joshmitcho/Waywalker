@@ -146,7 +146,7 @@ public class Unit : MonoBehaviour
         {
             map.ClearCurrentPath();
             map.state = TileMap.State.zero;
-            map.Dijkstra(this, true);
+            map.Dijkstra(this, true, false);
             map.OpenActionMenu();
             map.NewToolTip(occupyingTile);
         }
