@@ -47,6 +47,30 @@
 			"traits": "Amphibious. Shork can breathe air and water.",
 			"spritesheet": "kelly.png",
 			"numSprites": 8
+		},
+		{
+			"name": "Zero",
+			"team": "PC",
+			"alignment": "Neutral Good",
+			"class": "Fighter",
+			"race": "Huuman",
+			"AC": 12,
+			"HP": 10,
+			"walkingSpeed": 20,
+			"swimmingSpeed": 20,
+			"STR": 15,
+			"DEX": 9,
+			"CON": 10,
+			"INT": 8,
+			"WIS": 5,
+			"CHA": 8,
+			"savingThrows": "CON +6, INT +8, WIS +6",
+			"skills": "History +12, Perception +10",
+			"senses": "Darkvision 120 ft.,  Passive Perception 20",
+			"languages": "Deep Speech, Telepathy 120 ft.",
+			"traits": "Amphibious. Shork can breathe air and water.",
+			"spritesheet": "Zero.png",
+			"numSprites": 1
 		}
 	]
 }
