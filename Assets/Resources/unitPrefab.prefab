@@ -55,6 +55,12 @@ MonoBehaviour:
   currentHP: 30
   AC: 18
   currentAC: 0
+  STR: 0
+  DEX: 0
+  CON: 0
+  INT: 0
+  WIS: 0
+  CHA: 0
   numAttackActions: 1
   remainingAttackActions: 0
   initiativeBonus: 20
@@ -117,7 +123,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 38a32d752bee24542a692a5ae61d0b59, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
