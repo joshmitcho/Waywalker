@@ -5,7 +5,7 @@
 			"tileType": "Plain",
 			"isWalkable": true,
 			"movementCost": 5,
-			"spritesheet": "plain.png",
+			"spritesheet": "overworld_tileset_grass.png",
 			"numSprites": 1,
 			"rotation": 0
         },

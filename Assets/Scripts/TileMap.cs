@@ -67,13 +67,16 @@ public class TileMap : MonoBehaviour
                 byte[] bytes = File.ReadAllBytes(path);
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
-                                
+                texture.filterMode = FilterMode.Point;
+
                 List<Sprite> lst = new List<Sprite>();
 
+                int tileSize = 32;
+                
                 for (int i = 0; i < tileDict[key].numSprites; i++)
                 {
-                    Sprite sp = Sprite.Create(texture, new Rect(i*32, 0, 32, 32),
-                        new Vector2(0.5f, 0.5f), 32f, 0, SpriteMeshType.FullRect);
+                    Sprite sp = Sprite.Create(texture, new Rect(i*32, 0, tileSize, tileSize),
+                        new Vector2(0.5f, 0.5f), tileSize, 0, SpriteMeshType.FullRect);
                     lst.Add(sp);
                 }
 
@@ -103,6 +106,7 @@ public class TileMap : MonoBehaviour
                 byte[] bytes = File.ReadAllBytes(path);
                 Texture2D texture = new Texture2D(1, 1);
                 texture.LoadImage(bytes);
+                texture.filterMode = FilterMode.Point;
 
                 List<Sprite> lst = new List<Sprite>();
 
