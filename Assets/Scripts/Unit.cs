@@ -145,7 +145,7 @@ public class Unit : MonoBehaviour
         if (currentPath == null) //if movement is complete...
         {
             map.ClearCurrentPath();
-            map.state = TileMap.State.zero;
+            map.state = TileMap.State.Zero;
             map.Dijkstra(this, true, false);
             map.OpenActionMenu();
             map.NewToolTip(occupyingTile);

@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using System.IO;
 
 public class Fps : MonoBehaviour
 {
 
 	string label = "";
 	private float count;
-
+	
 	IEnumerator Start()
 	{
 		GUI.depth = 2;

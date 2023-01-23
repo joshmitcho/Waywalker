@@ -4,13 +4,12 @@ using System;
 using TMPro;
 using System.IO;
 using UnityEngine.UI;
-using UnityEditor;
 
 public class TileMap : MonoBehaviour
 {
     public Camera cam;
-    public enum State { zero, choosingMovement, unitMoving, choosingAttack };
-    public State state = State.zero;
+    public enum State { Zero, ChoosingMovement, UnitMoving, ChoosingAttack };
+    public State state = State.Zero;
 
     public Tooltip tooltip;
 
@@ -18,7 +17,7 @@ public class TileMap : MonoBehaviour
     Button[] buttons;
 
 
-    int roundCounter = 0;
+    int roundCounter;
     public TextMeshProUGUI roundDisplay;
     public TextMeshProUGUI turnDisplay;
 
@@ -52,45 +51,6 @@ public class TileMap : MonoBehaviour
         RollInitiative();
         NextRound();
         NextTurn();
-    }
-
-    private Dictionary<char, List<Sprite>> LoadTileSprites(Dictionary<char, TileSpec> tileDict)
-    {
-        Dictionary<char, List<Sprite>> sprites = new Dictionary<char, List<Sprite>>();
-
-        foreach (char key in tileDict.Keys)
-        {
-            string path = Application.streamingAssetsPath + "/Sprites/" + tileDict[key].spritesheet;
-            
-            if (File.Exists(path))
-            {
-                byte[] bytes = File.ReadAllBytes(path);
-                Texture2D texture = new Texture2D(1, 1);
-                texture.LoadImage(bytes);
-                texture.filterMode = FilterMode.Point;
-
-                List<Sprite> lst = new List<Sprite>();
-
-                int tileSize = 32;
-                
-                for (int i = 0; i < tileDict[key].numSprites; i++)
-                {
-                    Sprite sp = Sprite.Create(texture, new Rect(i*32, 0, tileSize, tileSize),
-                        new Vector2(0.5f, 0.5f), tileSize, 0, SpriteMeshType.FullRect);
-                    lst.Add(sp);
-                }
-
-                sprites.Add(key, lst);
-                
-            }
-            else
-            {
-                print("No file at: " + path);
-            }
-        }
-
-        return sprites;
-
     }
 
     private Dictionary<int, List<Sprite>> LoadPartySprites(UnitSpec[] units)
@@ -132,28 +92,37 @@ public class TileMap : MonoBehaviour
 
     void GenerateMapTiles(string filename)
     {
-        string path = Application.streamingAssetsPath + "/Maps/" + filename;
-
-        string tileJSON = File.ReadAllText(path + "_data.json");
-        Dictionary<char, TileSpec> tileDict = new Dictionary<char, TileSpec>();
-        foreach (TileSpec t in JsonHelper.FromJson<TileSpec>(tileJSON))
+        string path = Path.Combine(Application.streamingAssetsPath, "Maps", filename + ".json");
+        WWMap wwMap = ImportUtils.ImportJson<WWMap>(path);
+        
+        Dictionary<int, TileType> tileDict = new Dictionary<int, TileType>();
+        foreach (TileType t in wwMap.tileTypes)
         {
-            tileDict[t.letter[0]] = t;
+            foreach (int num in t.numbers)
+            {
+                tileDict[num] = t;
+            }
         }
-        Dictionary<char, List<Sprite>> sprites = LoadTileSprites(tileDict);
+        Dictionary<int, List<Sprite>> sprites = LoadTileSprites(tileDict, wwMap);
 
-        string[] mapText = File.ReadAllLines(path + ".txt");
+        mapSizeX = wwMap.width;
+        mapSizeY = wwMap.height;
+        int[,] map = new int[mapSizeY, mapSizeX];
 
-        //read and interpret the 3 lines of info before the map begins
-        //code code code
+        for (int i = 0; i < wwMap.baseLayer.Length; i++)
+        {
+            string[] lineStrings = wwMap.baseLayer[i].Split(",");
+            for (int j = 0; j < lineStrings.Length; j++)
+            {
+                map[i, j] = Int32.Parse(lineStrings[j]);
+            }
+        }
+        //values to store where the party begins (X on the map)
+        int partyX = 5;
+        int partyY = 5;
 
-        string[] map = mapText[3..mapText.Length];
-
-        mapSizeX = map[0].Length;
-        mapSizeY = map.Length;
-
-        //center camera over map
-        cam.transform.position = new Vector3(mapSizeX/2f - .5f, mapSizeY/2f - .5f, -10f);
+        //center camera over party
+        cam.transform.position = new Vector3(partyX - .5f, partyY - .5f, -10f);
 
         //generates arrow segments for later
         arrow.GenerateArrowSegments(mapSizeX, mapSizeY);
@@ -162,55 +131,86 @@ public class TileMap : MonoBehaviour
         //units = new int[mapSizeX, mapSizeY];
         clickableTiles = new ClickableTile[mapSizeX, mapSizeY];
 
-        //values to store where the party begins (X on the map)
-        int partyX = 0, partyY = 0;
-
         for (int x = 0; x < mapSizeX; x++)
         {
             for (int y = 0; y < mapSizeY; y++)
             {
                 //spawn visual prefabs for tiles
 
-                //grab tile letter from map txt file
-                char letter = map[mapSizeY - y - 1][x];
+                //grab tile number from map
+                int number = map[mapSizeY - y - 1, x];
                 GameObject tileGO;
                 ClickableTile ct;
 
-                if (letter == 'X') //if it's where the party starts...
-                {
-                    letter = '-'; //instantiate a plain tile for now
-
-                    //remember where the party started, for later
-                    partyX = x;
-                    partyY = y;
-                }
-
                 tileGO = Instantiate(tilePrefab, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-                    
-                ct = tileGO.GetComponent<ClickableTile>();
-                ct.tileType = tileDict[letter].tileType;
-                ct.isWalkable = tileDict[letter].isWalkable;
-                ct.movementCost = tileDict[letter].movementCost;
 
-                if (sprites[letter].Count > 1) // If tile has a sprite animation
+                
+                ct = tileGO.GetComponent<ClickableTile>();
+                ct.tileType = tileDict[number].tileType;
+                ct.isWalkable = tileDict[number].isWalkable;
+                ct.movementCost = tileDict[number].movementCost;
+
+                if (sprites[number].Count > 1) // If tile has a sprite animation
                 {
-                    tileGO.GetComponent<SpriteAnimator>().LoadSprites(sprites[letter]);
+                    tileGO.GetComponent<SpriteAnimator>().LoadSprites(sprites[number]);
                 }
                 else // if the tile is just a static sprite
                 {
-                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites[letter][0];
+                    tileGO.GetComponent<SpriteRenderer>().sprite = sprites[number][0];
                 }
 
                 ct.tileX = x;
                 ct.tileY = y;
                 ct.map = this;
                 clickableTiles[x, y] = ct;
-                    
                 
             }
         }
         //instatiate party units
         LoadParty(partyX, partyY);
+    }
+    
+    Dictionary<int, List<Sprite>> LoadTileSprites(Dictionary<int, TileType> tileDict, WWMap wwMap)
+    {
+        int tileSize = wwMap.tileSize;
+        int sheetWidth = wwMap.pixelsWide / tileSize;
+        int sheetHeight = wwMap.pixelsHigh / tileSize;
+        
+        print("spritesheet tiling: " + sheetWidth + "x" + sheetHeight);
+        
+        Dictionary<int, List<Sprite>> sprites = new Dictionary<int, List<Sprite>>();
+
+        foreach (int num in tileDict.Keys)
+        {
+            string path = Path.Combine(Application.streamingAssetsPath, "Sprites", wwMap.spritesheet);
+            
+            if (File.Exists(path))
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                Texture2D texture = new Texture2D(1, 1);
+                texture.LoadImage(bytes);
+                texture.filterMode = FilterMode.Point;
+
+                List<Sprite> lst = new List<Sprite>();
+
+                int x = ((num % sheetWidth) - 1) * tileSize;
+                int y = wwMap.pixelsHigh - tileSize * ((num / sheetWidth) + 1);
+                
+                //print("num: " + num + "\n" + x + "x" + y);
+                
+                Sprite sp = Sprite.Create(texture, new Rect(x, y, tileSize, tileSize),
+                    new Vector2(0.5f, 0.5f), tileSize, 0, SpriteMeshType.FullRect);
+                lst.Add(sp);
+                sprites.Add(num, lst);
+            }
+            else
+            {
+                print("No file at: " + path);
+            }
+        }
+
+        return sprites;
+
     }
 
     void LoadParty(int partyX, int partyY)
@@ -371,7 +371,7 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        state = State.choosingMovement;
+        state = State.ChoosingMovement;
         actionMenu.gameObject.SetActive(false);
 
     }
@@ -397,7 +397,7 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        state = State.choosingAttack;
+        state = State.ChoosingAttack;
         actionMenu.gameObject.SetActive(false);
 
     }
@@ -570,7 +570,7 @@ public class TileMap : MonoBehaviour
     {
         if (selectedUnit.currentPath != null)
         {
-            state = State.unitMoving;
+            state = State.UnitMoving;
             clickableTiles[selectedUnit.tileX, selectedUnit.tileY].occupyingUnit = null;
             clickableTiles[x, y].occupyingUnit = selectedUnit;
             selectedUnit.occupyingTile = clickableTiles[x, y];

@@ -107,7 +107,7 @@ public class DiceHandler : MonoBehaviour
         dice[0].transform.position = anchor + new Vector3(0, -64, 0);
         dice[0].GetComponent<Image>().sprite = (Sprite)sprites[0];
 
-        map.state = TileMap.State.zero;
+        map.state = TileMap.State.Zero;
         map.OpenActionMenu();
 
         return values[0];

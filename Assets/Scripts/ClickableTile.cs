@@ -54,7 +54,7 @@ public class ClickableTile : MonoBehaviour
 
         HoverHighlightOn();
 
-        if (map.state != TileMap.State.unitMoving)
+        if (map.state != TileMap.State.UnitMoving)
         {
             map.GeneratePathTo(tileX, tileY, withinMovementSet);
             map.NewToolTip(this);
@@ -74,7 +74,7 @@ public class ClickableTile : MonoBehaviour
     private void OnMouseExit()
     {
         HoverHighlightOff();
-        if (map.state != TileMap.State.unitMoving)
+        if (map.state != TileMap.State.UnitMoving)
         {
             map.ClearCurrentPath();
         }
@@ -124,12 +124,12 @@ public class ClickableTile : MonoBehaviour
 
     private void OnMouseUp()
     {
-        if (withinMovementSet && map.state == TileMap.State.choosingMovement && occupyingUnit == null)
+        if (withinMovementSet && map.state == TileMap.State.ChoosingMovement && occupyingUnit == null)
         {
             map.MoveUnit(tileX, tileY, costToFinishHere);
         }
 
-        if (withinAttackSet && map.state == TileMap.State.choosingAttack && occupyingUnit != null)
+        if (withinAttackSet && map.state == TileMap.State.ChoosingAttack && occupyingUnit != null)
         {
             map.Attack(occupyingUnit);
             
